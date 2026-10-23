@@ -102,7 +102,7 @@ def _columns(conn: sqlite3.Connection) -> dict[str, set[str]]:
         return cols
     for t in tables:
         try:
-            cols[t] = {r[1] for r in conn.execute(f'PRAGMA table_info("{t}")')}
+            cols[t] = {r[0] for r in conn.execute("SELECT name FROM pragma_table_info(?)", (t,))}
         except sqlite3.Error:
             continue
     return cols
@@ -125,8 +125,12 @@ def list_sessions(conn: sqlite3.Connection, project: str | None = None) -> list[
     if has_deleted:
         sql += " AND s.time_deleted IS NULL"
     if project:
-        sql += " AND (s.project_id = ? OR s.directory = ?)"
-        params += [project, project]
+        if "project_id" in cols.get("session", set()):
+            sql += " AND (s.project_id = ? OR s.directory = ?)"
+            params += [project, project]
+        else:
+            sql += " AND s.directory = ?"
+            params += [project]
     sql += " ORDER BY s.time_created DESC"
 
     out: list[dict[str, Any]] = []

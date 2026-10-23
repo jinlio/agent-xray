@@ -1,10 +1,10 @@
 {
   "schemaVersion": "mimosa-hook-status/v1",
-  "recordedAt": "2026-10-23T17:41:57.997Z",
+  "recordedAt": "2026-10-23T17:46:15.769Z",
   "sessionId": "session_58c3e158b60f46898075ab3c03bc1181",
   "event": "PostToolUse",
   "toolName": "Edit",
-  "file": "launch-drafts.md",
+  "file": "src/agent_xray/adapters/zcode_db.py",
   "outcome": "clear",
   "coverage": "complete",
   "findingCount": 0,
