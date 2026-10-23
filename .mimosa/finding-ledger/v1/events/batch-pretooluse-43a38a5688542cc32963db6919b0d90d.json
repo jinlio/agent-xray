@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "pretooluse-43a38a5688542cc32963db6919b0d90d",
+  "runId": null,
+  "runStatus": "completed",
+  "coverage": {
+    "status": "complete",
+    "reasons": []
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "PreToolUse"
+  },
+  "revision": null,
+  "diffHash": null,
+  "rulesVersion": null,
+  "sessionHash": "78ad50d73f9b3f3fe49250b9c050afbf138cd8f30bf34148389f63b8334e01ab",
+  "reportRef": null,
+  "events": [
+    {
+      "eventId": "hook-6aeba324857ecf826a620bd33ef8dc8e",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:19:44.124Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 79,
+      "endLine": 79,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 0
+    },
+    {
+      "eventId": "hook-82b09caaab4de8018420ab9fcdf74090",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:19:44.124Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 100,
+      "endLine": 100,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 1
+    },
+    {
+      "eventId": "hook-51b8022048c32b1c4b19fa2179860b15",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:19:44.124Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 108,
+      "endLine": 108,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 2
+    }
+  ],
+  "observedFindingIds": [],
+  "verifiedFiles": [],
+  "recordedAt": "2026-10-23T17:19:44.286Z"
+}

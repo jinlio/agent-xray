@@ -1,0 +1,313 @@
+{
+ "app_version": "1.2.3",
+ "child_sessions": [
+  {
+   "app_version": "",
+   "child_sessions": [],
+   "created_at": 1792490530000,
+   "cwd": "",
+   "duration_ms": 10000,
+   "id": "transcript#sidechain-1",
+   "models": [
+    "claude-haiku-4-5"
+   ],
+   "source": "claude_code",
+   "stats": {
+    "aux_call_count": 0,
+    "cost": {
+     "cache_read": 0.0,
+     "cache_write": 0.0,
+     "input": 5e-05,
+     "output": 0.0001,
+     "total": 0.00015000000000000001
+    },
+    "failures": [],
+    "hidden_message_count": 0,
+    "model_call_count": 1,
+    "parse_error_count": 0,
+    "retry_count": 0,
+    "tool_count": 1,
+    "tool_error_count": 0,
+    "tool_top": [
+     {
+      "category": "search",
+      "count": 1,
+      "errors": 0,
+      "name": "Grep",
+      "total_ms": 0
+     }
+    ],
+    "turn_count": 1,
+    "usage": {
+     "cache_read": 0,
+     "cache_write": 0,
+     "input": 50,
+     "output": 20,
+     "reasoning": 0
+    }
+   },
+   "title": "subagent run #1",
+   "turns": [
+    {
+     "annotations": [],
+     "duration_ms": 10000,
+     "id": "turn-0",
+     "index": 0,
+     "model_calls": [
+      {
+       "agent": "",
+       "attempt": 1,
+       "cost": {
+        "cache_read": 0.0,
+        "cache_write": 0.0,
+        "input": 5e-05,
+        "output": 0.0001,
+        "total": 0.00015000000000000001
+       },
+       "duration_ms": null,
+       "error": "",
+       "finish_reason": "tool-calls",
+       "id": "msg_s1",
+       "model": "claude-haiku-4-5",
+       "provider": "",
+       "query_source": "main_turn",
+       "reasoning_text": "",
+       "started_at": 1792490530000,
+       "status": "completed",
+       "text": "",
+       "tool_uses": [
+        {
+         "category": "search",
+         "duration_ms": null,
+         "error": "",
+         "exit_code": null,
+         "id": "toolu_s1",
+         "input": "{\"pattern\": \"x\"}",
+         "name": "Grep",
+         "output": "no matches",
+         "started_at": 1792490530000,
+         "status": "ok"
+        }
+       ],
+       "usage": {
+        "cache_read": 0,
+        "cache_write": 0,
+        "input": 50,
+        "output": 20,
+        "reasoning": 0
+       }
+      }
+     ],
+     "started_at": 1792490530000,
+     "status": "ok",
+     "user_text": ""
+    }
+   ],
+   "updated_at": 1792490540000,
+   "warnings": []
+  }
+ ],
+ "created_at": 1792490400000,
+ "cwd": "/tmp/cc",
+ "duration_ms": 240000,
+ "id": "transcript",
+ "models": [
+  "claude-sonnet-4-5"
+ ],
+ "source": "claude_code",
+ "stats": {
+  "aux_call_count": 0,
+  "cost": {
+   "cache_read": 0.0,
+   "cache_write": 0.0,
+   "input": 0.0021000000000000003,
+   "output": 0.003,
+   "total": 0.015099999999999999
+  },
+  "failures": [
+   {
+    "at": 1792490520000,
+    "kind": "tool_error",
+    "message": "Bash: error",
+    "ref": "toolu_02",
+    "turn_index": 0
+   }
+  ],
+  "hidden_message_count": 0,
+  "model_call_count": 3,
+  "parse_error_count": 1,
+  "retry_count": 0,
+  "tool_count": 2,
+  "tool_error_count": 1,
+  "tool_top": [
+   {
+    "category": "bash",
+    "count": 1,
+    "errors": 1,
+    "name": "Bash",
+    "total_ms": 0
+   },
+   {
+    "category": "read",
+    "count": 1,
+    "errors": 0,
+    "name": "Read",
+    "total_ms": 0
+   }
+  ],
+  "turn_count": 2,
+  "usage": {
+   "cache_read": 200,
+   "cache_write": 10,
+   "input": 800,
+   "output": 250,
+   "reasoning": 0,
+   "total": 1260
+  }
+ },
+ "title": "修复 OAuth 登录",
+ "turns": [
+  {
+   "annotations": [],
+   "duration_ms": 240000,
+   "id": "turn-0",
+   "index": 0,
+   "model_calls": [
+    {
+     "agent": "",
+     "attempt": 1,
+     "cost": {
+      "cache_read": 0.0,
+      "cache_write": 0.0,
+      "input": 0.0,
+      "output": 0.0,
+      "total": 0.01
+     },
+     "duration_ms": null,
+     "error": "",
+     "finish_reason": "tool-calls",
+     "id": "msg_01",
+     "model": "claude-sonnet-4-5",
+     "provider": "",
+     "query_source": "main_turn",
+     "reasoning_text": "分析问题",
+     "started_at": 1792490430000,
+     "status": "completed",
+     "text": "我先看下代码",
+     "tool_uses": [
+      {
+       "category": "read",
+       "duration_ms": null,
+       "error": "",
+       "exit_code": null,
+       "id": "toolu_01",
+       "input": "{\"file_path\": \"a.py\"}",
+       "name": "Read",
+       "output": "file contents",
+       "started_at": 1792490430000,
+       "status": "ok"
+      }
+     ],
+     "usage": {
+      "cache_read": 200,
+      "cache_write": 10,
+      "input": 100,
+      "output": 50,
+      "reasoning": 0,
+      "total": 360
+     }
+    },
+    {
+     "agent": "",
+     "attempt": 1,
+     "cost": {
+      "cache_read": 0.0,
+      "cache_write": 0.0,
+      "input": 0.0009,
+      "output": 0.0012000000000000001,
+      "total": 0.0021000000000000003
+     },
+     "duration_ms": null,
+     "error": "",
+     "finish_reason": "tool-calls",
+     "id": "msg_02",
+     "model": "claude-sonnet-4-5",
+     "provider": "",
+     "query_source": "main_turn",
+     "reasoning_text": "",
+     "started_at": 1792490520000,
+     "status": "completed",
+     "text": "",
+     "tool_uses": [
+      {
+       "category": "bash",
+       "duration_ms": null,
+       "error": "",
+       "exit_code": null,
+       "id": "toolu_02",
+       "input": "{\"command\": \"pytest\"}",
+       "name": "Bash",
+       "output": "1 failed",
+       "started_at": 1792490520000,
+       "status": "error"
+      }
+     ],
+     "usage": {
+      "cache_read": 0,
+      "cache_write": 0,
+      "input": 300,
+      "output": 80,
+      "reasoning": 0,
+      "total": 380
+     }
+    },
+    {
+     "agent": "",
+     "attempt": 1,
+     "cost": {
+      "cache_read": 0.0,
+      "cache_write": 0.0,
+      "input": 0.0012000000000000001,
+      "output": 0.0018,
+      "total": 0.003
+     },
+     "duration_ms": null,
+     "error": "",
+     "finish_reason": "stop",
+     "id": "msg_03",
+     "model": "claude-sonnet-4-5",
+     "provider": "",
+     "query_source": "main_turn",
+     "reasoning_text": "",
+     "started_at": 1792490580000,
+     "status": "completed",
+     "text": "测试失败原因是...",
+     "tool_uses": [],
+     "usage": {
+      "cache_read": 0,
+      "cache_write": 0,
+      "input": 400,
+      "output": 120,
+      "reasoning": 0,
+      "total": 520
+     }
+    }
+   ],
+   "started_at": 1792490400000,
+   "status": "ok",
+   "user_text": "修复 OAuth 登录"
+  },
+  {
+   "annotations": [],
+   "duration_ms": 0,
+   "id": "turn-1",
+   "index": 1,
+   "model_calls": [],
+   "started_at": 1792490640000,
+   "status": "ok",
+   "user_text": "旧版字符串消息"
+  }
+ ],
+ "updated_at": 1792490640000,
+ "warnings": []
+}

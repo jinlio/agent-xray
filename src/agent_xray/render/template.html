@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__XRAY_TITLE__ — Agent X-Ray</title>
+<style>__XRAY_CSS__</style>
+</head>
+<body>
+<header id="hdr"></header>
+<div id="banner" class="banner"></div>
+<nav id="tabs"></nav>
+<main>
+  <section id="view-timeline"><div id="turn-list"></div></section>
+  <section id="view-tools" hidden><div id="tool-table"></div></section>
+  <section id="view-failures" hidden><div id="fail-list"></div></section>
+  <section id="view-cost" hidden><div id="cost-chart"></div><div id="cost-table"></div></section>
+  <section id="view-children" hidden><div id="child-list"></div></section>
+</main>
+<aside id="drawer"></aside>
+<script type="application/json" id="xray-data">__XRAY_DATA__</script>
+<script>__XRAY_ECHARTS__</script>
+<script>__XRAY_APP__</script>
+</body>
+</html>

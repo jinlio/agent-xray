@@ -1,0 +1,60 @@
+[project]
+name = "agent-xray"
+version = "0.1.0"
+description = "Zero-instrumentation, fully local X-ray for coding-agent sessions: interactive timeline, tool-call tree, token/cost curves and failure highlights in a single shareable HTML file."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Cheng Ge" }]
+keywords = [
+  "claude-code",
+  "zcode",
+  "ai-agent",
+  "observability",
+  "transcript",
+  "jsonl",
+  "llm",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Debuggers",
+  "Topic :: System :: Monitoring",
+]
+dependencies = []
+
+[project.scripts]
+agent-xray = "agent_xray.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/chengge/agent-xray"
+Issues = "https://github.com/chengge/agent-xray/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_xray"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.8"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,285 @@
+{
+ "app_version": "0.17.0",
+ "child_sessions": [
+  {
+   "app_version": "0.17.0",
+   "child_sessions": [],
+   "created_at": 1760000005000,
+   "cwd": "/tmp/proj",
+   "duration_ms": 1000,
+   "id": "sess_subagent_agent_11111111",
+   "models": [
+    "GLM-5.3-Flash"
+   ],
+   "source": "zcode_db",
+   "stats": {
+    "aux_call_count": 0,
+    "cost": {
+     "cache_read": 0.0,
+     "cache_write": 0.0,
+     "input": 0.0001,
+     "output": 0.00011000000000000002,
+     "total": 0.00021
+    },
+    "failures": [],
+    "hidden_message_count": 0,
+    "model_call_count": 1,
+    "parse_error_count": 0,
+    "retry_count": 0,
+    "tool_count": 0,
+    "tool_error_count": 0,
+    "tool_top": [],
+    "turn_count": 1,
+    "usage": {
+     "cache_read": 0,
+     "cache_write": 0,
+     "input": 500,
+     "output": 100,
+     "reasoning": 0
+    }
+   },
+   "title": "子代理",
+   "turns": [
+    {
+     "annotations": [],
+     "duration_ms": 3000,
+     "id": "cturn_a",
+     "index": 0,
+     "model_calls": [
+      {
+       "agent": "zcode-Explore",
+       "attempt": 1,
+       "cost": {
+        "cache_read": 0.0,
+        "cache_write": 0.0,
+        "input": 0.0001,
+        "output": 0.00011000000000000002,
+        "total": 0.00021
+       },
+       "duration_ms": 2000,
+       "error": "",
+       "finish_reason": "stop",
+       "id": "c_a1",
+       "model": "GLM-5.3-Flash",
+       "provider": "",
+       "query_source": "main_turn",
+       "reasoning_text": "",
+       "started_at": 1760000006000,
+       "status": "completed",
+       "text": "目录里有 3 个文件",
+       "tool_uses": [],
+       "usage": {
+        "cache_read": 0,
+        "cache_write": 0,
+        "input": 500,
+        "output": 100,
+        "reasoning": 0
+       }
+      }
+     ],
+     "started_at": 1760000005000,
+     "status": "ok",
+     "user_text": "探索这个目录"
+    }
+   ],
+   "updated_at": 1760000006000,
+   "warnings": []
+  }
+ ],
+ "created_at": 1760000000000,
+ "cwd": "/tmp/proj",
+ "duration_ms": 12000,
+ "id": "session_testmain",
+ "models": [
+  "GLM-5.3",
+  "qwen3.8-flash"
+ ],
+ "source": "zcode_db",
+ "stats": {
+  "aux_call_count": 1,
+  "cost": {
+   "cache_read": 5.55e-05,
+   "cache_write": 7.500000000000001e-05,
+   "input": 0.0007,
+   "output": 0.00064,
+   "total": 0.0014705000000000002
+  },
+  "failures": [
+   {
+    "at": 1760000002000,
+    "kind": "tool_error",
+    "message": "Edit: File has not been read yet. Read it first before writing to it.",
+    "ref": "call_2",
+    "turn_index": 0
+   },
+   {
+    "at": 1760000010000,
+    "kind": "context_exceeded",
+    "message": "context window exceeded on this turn",
+    "ref": "turn_b",
+    "turn_index": 1
+   },
+   {
+    "at": 1760000010000,
+    "kind": "model_error",
+    "message": "ApiError (CONTEXT)",
+    "ref": "turn_b",
+    "turn_index": 1
+   },
+   {
+    "at": 1760000012000,
+    "kind": "retry",
+    "message": "qwen3.8-flash needed 2 attempts",
+    "ref": "m_a2",
+    "turn_index": 1
+   }
+  ],
+  "hidden_message_count": 1,
+  "model_call_count": 2,
+  "parse_error_count": 0,
+  "retry_count": 1,
+  "tool_count": 2,
+  "tool_error_count": 1,
+  "tool_top": [
+   {
+    "category": "bash",
+    "count": 1,
+    "errors": 0,
+    "name": "Bash",
+    "total_ms": 400
+   },
+   {
+    "category": "edit",
+    "count": 1,
+    "errors": 1,
+    "name": "Edit",
+    "total_ms": 100
+   }
+  ],
+  "turn_count": 2,
+  "usage": {
+   "cache_read": 2300,
+   "cache_write": 100,
+   "input": 3300,
+   "output": 710,
+   "reasoning": 50,
+   "total": 6410
+  }
+ },
+ "title": "修复登录 bug",
+ "turns": [
+  {
+   "annotations": [],
+   "duration_ms": 7000,
+   "id": "turn_a",
+   "index": 0,
+   "model_calls": [
+    {
+     "agent": "zcode-agent",
+     "attempt": 1,
+     "cost": {
+      "cache_read": 4.8e-05,
+      "cache_write": 7.500000000000001e-05,
+      "input": 0.0006,
+      "output": 0.00044000000000000007,
+      "total": 0.0011630000000000002
+     },
+     "duration_ms": 4800,
+     "error": "",
+     "finish_reason": "tool-calls",
+     "id": "m_a1",
+     "model": "GLM-5.3",
+     "provider": "prov-1",
+     "query_source": "main_turn",
+     "reasoning_text": "让我看看代码",
+     "started_at": 1760000002000,
+     "status": "completed",
+     "text": "好的，我先查看",
+     "tool_uses": [
+      {
+       "category": "bash",
+       "duration_ms": 400,
+       "error": "",
+       "exit_code": 0,
+       "id": "call_1",
+       "input": "{\"command\": \"ls\"}",
+       "name": "Bash",
+       "output": "a.py\nb.py",
+       "started_at": 1760000003000,
+       "status": "ok"
+      },
+      {
+       "category": "edit",
+       "duration_ms": 100,
+       "error": "File has not been read yet. Read it first before writing to it.",
+       "exit_code": null,
+       "id": "call_2",
+       "input": "{\"file_path\": \"a.py\"}",
+       "name": "Edit",
+       "output": "",
+       "started_at": 1760000003500,
+       "status": "error"
+      }
+     ],
+     "usage": {
+      "cache_read": 800,
+      "cache_write": 100,
+      "input": 1000,
+      "output": 200,
+      "reasoning": 50,
+      "total": 2100
+     }
+    }
+   ],
+   "started_at": 1760000000000,
+   "status": "ok",
+   "user_text": "帮我修复登录 bug"
+  },
+  {
+   "annotations": [],
+   "duration_ms": 6000,
+   "id": "turn_b",
+   "index": 1,
+   "model_calls": [
+    {
+     "agent": "zcode-agent",
+     "attempt": 2,
+     "cost": {
+      "cache_read": 7.500000000000001e-06,
+      "cache_write": 0.0,
+      "input": 0.0001,
+      "output": 0.0002,
+      "total": 0.00030750000000000005
+     },
+     "duration_ms": 4000,
+     "error": "",
+     "finish_reason": "stop",
+     "id": "m_a2",
+     "model": "qwen3.8-flash",
+     "provider": "",
+     "query_source": "main_turn",
+     "reasoning_text": "",
+     "started_at": 1760000012000,
+     "status": "completed",
+     "text": "测试通过 ✅",
+     "tool_uses": [],
+     "usage": {
+      "cache_read": 1500,
+      "cache_write": 0,
+      "input": 2000,
+      "output": 500,
+      "reasoning": 0,
+      "total": 4000
+     }
+    }
+   ],
+   "started_at": 1760000010000,
+   "status": "error",
+   "user_text": "再跑一下测试"
+  }
+ ],
+ "updated_at": 1760000012000,
+ "warnings": [
+  "last_outcome=completed"
+ ]
+}
