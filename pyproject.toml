@@ -34,8 +34,8 @@ dependencies = []
 agent-xray = "agent_xray.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/chengge/agent-xray"
-Issues = "https://github.com/chengge/agent-xray/issues"
+Homepage = "https://github.com/jinlio/agent-xray"
+Issues = "https://github.com/jinlio/agent-xray/issues"
 
 [build-system]
 requires = ["hatchling"]
