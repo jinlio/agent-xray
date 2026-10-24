@@ -20,17 +20,17 @@
 
 ```bash
 # 安装（零依赖，纯标准库 + 内联 ECharts）
-uv tool install agentxray      # 或: pipx install agentxray / pip install agentxray
-                               # PyPI 包名 agentxray，GitHub 仓库 jinlio/agent-xray
+uv tool install agentxray-replay   # 或: pipx install agentxray-replay / pip install agentxray-replay
+                                   # PyPI 包名 agentxray-replay（agent-xray 被占用），命令可简写 agent-xray
 
-agentxray                      # 列出 ZCode 的全部本地会话
-agentxray --summary            # 最近一次会话的终端摘要（含失败点清单）
-agentxray --session 3          # 渲染第 3 个会话 → ./agent-xray-out/xxx-xray.html
-agentxray --session 3 --open   # 渲染并在浏览器打开
+agent-xray                         # 列出 ZCode 的全部本地会话
+agent-xray --summary               # 最近一次会话的终端摘要（含失败点清单）
+agent-xray --session 3             # 渲染第 3 个会话 → ./agent-xray-out/xxx-xray.html
+agent-xray --session 3 --open      # 渲染并在浏览器打开
 
 # Claude Code 转录（experimental）
-agentxray ~/.claude/projects/<proj>/<session>.jsonl
-agentxray ~/.claude/projects/<proj>/        # 目录批量 + 索引页
+agent-xray ~/.claude/projects/<proj>/<session>.jsonl
+agent-xray ~/.claude/projects/<proj>/        # 目录批量 + 索引页
 ```
 
 终端摘要示例（真实会话输出）：
