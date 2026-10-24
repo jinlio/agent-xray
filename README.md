@@ -1,5 +1,10 @@
 # Agent X-Ray 🔬
 
+[![CI](https://github.com/jinlio/agent-xray/actions/workflows/ci.yml/badge.svg)](https://github.com/jinlio/agent-xray/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/agentxray-replay)](https://pypi.org/project/agentxray-replay/)
+[![Python](https://img.shields.io/pypi/pyversions/agentxray-replay)](https://pypi.org/project/agentxray-replay/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 **零埋点、纯本地的编码 agent 会话回放器**——把 Claude Code / ZCode 的会话日志变成一张可交互的**执行 X 光片**：执行时间轴、工具调用树、token/成本曲线、失败点高亮。输出**单个 HTML 文件**，双击即看，可直接扔进 PR / 邮件分享。
 
 ![Agent X-Ray 演示](docs/demo.gif)
