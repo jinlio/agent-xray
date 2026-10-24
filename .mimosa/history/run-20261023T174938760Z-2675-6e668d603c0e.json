@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "mimosa-finding-history/v1",
+  "runId": "20261023T174938760Z-2675-6e668d603c0e",
+  "runStatus": "inconclusive",
+  "errors": [
+    "baseline-read:.github/workflows/ci.yml: baseline_snapshot_unreadable: file is missing from task baseline",
+    "scan:src/agent_xray/__init__.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/model.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/cost.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/adapters/zcode_db.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/adapters/__init__.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/adapters/claude_code.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/render/assets/app.js: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/render/__init__.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:src/agent_xray/cli.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:tests/conftest.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "scan:tests/test_adapters.py: scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+    "supply-chain-check:.: stop_budget_exhausted: focused supply-chain check was not run before the gate budget",
+    "agent-check:.: stop_budget_exhausted: focused agent configuration check was not run before the gate budget"
+  ],
+  "target": ".",
+  "revision": "dd9b1c4190746141ff1c212e07ab0f13c84f3376",
+  "diffHash": "1fe1ba81eb19327c0ebe99f99d837cc34c16092fa1ab8f1381cb80959d62accd",
+  "rulesVersion": "unavailable",
+  "recordedAt": "2026-10-23T17:49:38.760Z",
+  "timing": {
+    "startedAt": "2026-10-23T17:49:36.564Z",
+    "completedAt": "2026-10-23T17:49:38.760Z",
+    "durationMs": 2196
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "total": 0,
+    "modelCalls": 0,
+    "measurement": "known-zero"
+  },
+  "findings": {
+    "total": 8,
+    "bySeverity": {
+      "high": 8
+    },
+    "byStatus": {
+      "static_verified": 8
+    }
+  },
+  "coverage": {
+    "status": "partial",
+    "reasonCounts": {
+      "baseline_snapshot_unreadable": 1,
+      "scanner_failed": 11,
+      "stop_budget_exhausted": 2,
+      "project_check_failed": 14
+    }
+  },
+  "evidenceBoundary": "static_only",
+  "immutableReport": ".mimosa/reports/task-review-session_58c3e158b60f46898075ab3c03bc1181-20261023T174938760Z-2675-6e668d603c0e.json"
+}

@@ -1,0 +1,797 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "stop-20261023T174938760Z-2675-6e668d603c0e",
+  "runId": "20261023T174938760Z-2675-6e668d603c0e",
+  "runStatus": "inconclusive",
+  "coverage": {
+    "status": "partial",
+    "reasons": [
+      {
+        "code": "baseline_snapshot_unreadable",
+        "stage": "baseline-read",
+        "target": ".github/workflows/ci.yml",
+        "detail": "file is missing from task baseline",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/__init__.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/model.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/cost.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/adapters/zcode_db.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/adapters/__init__.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/adapters/claude_code.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/render/assets/app.js",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/render/__init__.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/cli.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "tests/conftest.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "tests/test_adapters.py",
+        "detail": "spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "stop_budget_exhausted",
+        "stage": "supply-chain-check",
+        "target": ".",
+        "detail": "focused supply-chain check was not run before the gate budget",
+        "affectsCompletion": true
+      },
+      {
+        "code": "stop_budget_exhausted",
+        "stage": "agent-check",
+        "target": ".",
+        "detail": "focused agent configuration check was not run before the gate budget",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "baseline-read",
+        "target": ".github/workflows/ci.yml",
+        "detail": "baseline_snapshot_unreadable: file is missing from task baseline",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/__init__.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/model.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/cost.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/adapters/zcode_db.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/adapters/__init__.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/adapters/claude_code.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/render/assets/app.js",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/render/__init__.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "src/agent_xray/cli.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "tests/conftest.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "tests/test_adapters.py",
+        "detail": "scanner_failed: spawnSync /Users/chengge/.nvm/versions/node/v24.18.0/bin/node ETIMEDOUT",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "supply-chain-check",
+        "target": ".",
+        "detail": "stop_budget_exhausted: focused supply-chain check was not run before the gate budget",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "agent-check",
+        "target": ".",
+        "detail": "stop_budget_exhausted: focused agent configuration check was not run before the gate budget",
+        "affectsCompletion": true
+      }
+    ]
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "Stop"
+  },
+  "revision": "dd9b1c4190746141ff1c212e07ab0f13c84f3376",
+  "diffHash": "1fe1ba81eb19327c0ebe99f99d837cc34c16092fa1ab8f1381cb80959d62accd",
+  "rulesVersion": "unavailable",
+  "sessionHash": "78ad50d73f9b3f3fe49250b9c050afbf138cd8f30bf34148389f63b8334e01ab",
+  "reportRef": ".mimosa/reports/task-review-session_58c3e158b60f46898075ab3c03bc1181-20261023T174938760Z-2675-6e668d603c0e.json",
+  "events": [
+    {
+      "eventId": "hook-6aeba324857ecf826a620bd33ef8dc8e",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:19:44.124Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 79,
+      "endLine": 79,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 0
+    },
+    {
+      "eventId": "hook-82b09caaab4de8018420ab9fcdf74090",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:19:44.124Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 100,
+      "endLine": 100,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 1
+    },
+    {
+      "eventId": "hook-51b8022048c32b1c4b19fa2179860b15",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:19:44.124Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 108,
+      "endLine": 108,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 2
+    },
+    {
+      "eventId": "hook-365f7f06dfb625f0c93947e3d93ecbb9",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:21:24.440Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 81,
+      "endLine": 81,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 3
+    },
+    {
+      "eventId": "hook-24d95677ccb78c92c76455249f9dd9b6",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:21:24.440Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 92,
+      "endLine": 92,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 4
+    },
+    {
+      "eventId": "hook-8b3e8b2a56e4a3b9c822a70c7010b796",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:21:24.440Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 100,
+      "endLine": 100,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 5
+    },
+    {
+      "eventId": "hook-b5be383d868e7c78a9d96ebc20a6d6bf",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:21:24.440Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 116,
+      "endLine": 116,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 6
+    },
+    {
+      "eventId": "hook-1463d104d3ab27b40ef432bcf4f49bc7",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:21:24.440Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 140,
+      "endLine": 140,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 7
+    },
+    {
+      "eventId": "hook-03fa797ced0ecfa01808a9e75efbc8d8",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:21:24.440Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 160,
+      "endLine": 160,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 8
+    },
+    {
+      "eventId": "hook-6f98f046338895708fa96693f10c4208",
+      "findingId": "mimosa-604e82bd71199aec42d28c72",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:22:46.377Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "3077762a863789f490d9afd7e9810b58ba17892d152221db0e51b728c5a96050",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 85,
+      "endLine": 85,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "3077762a863789f490d9afd7e9810b58ba17892d152221db0e51b728c5a96050"
+      },
+      "sequence": 9
+    },
+    {
+      "eventId": "hook-801e38f83176e57900256eff510e05dc",
+      "findingId": "mimosa-349539ff7f71b0c34ba5e370",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:22:46.377Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "71b87722ab3dab26cac09108e4c5a0c183b9a4e8856276cf0caff765962fe9dd",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 90,
+      "endLine": 90,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "71b87722ab3dab26cac09108e4c5a0c183b9a4e8856276cf0caff765962fe9dd"
+      },
+      "sequence": 10
+    },
+    {
+      "eventId": "hook-d111a8fc5c8d66067ddf8b06c8c12172",
+      "findingId": "mimosa-2127b37e067a675ceaf5b5b6",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:22:46.377Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "ec49555b9a7b14cfe6ce781bae543c037ccf2f05f2cd0233c469028b04a4c2a6",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 95,
+      "endLine": 95,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "ec49555b9a7b14cfe6ce781bae543c037ccf2f05f2cd0233c469028b04a4c2a6"
+      },
+      "sequence": 11
+    },
+    {
+      "eventId": "hook-ba61b6d353396da5e201d699314425ce",
+      "findingId": "mimosa-500a889f26c95b9bd3cd06dd",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:22:46.377Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "66d2a1f1d073fb52c8a07ab9c9a17953502d035d4d5d23f999379576fa2f2452",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 113,
+      "endLine": 113,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "66d2a1f1d073fb52c8a07ab9c9a17953502d035d4d5d23f999379576fa2f2452"
+      },
+      "sequence": 12
+    },
+    {
+      "eventId": "hook-36c4d88ed1c8a604bcee6e57d0e6c528",
+      "findingId": "mimosa-9651efa8b5bd19097fd7774a",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:22:46.377Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "a1013ae559ac06d581863fbd27931cad57c322ac4b15f811339bbe4ccfa6acd3",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 130,
+      "endLine": 130,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "a1013ae559ac06d581863fbd27931cad57c322ac4b15f811339bbe4ccfa6acd3"
+      },
+      "sequence": 13
+    },
+    {
+      "eventId": "hook-e04c746397b5d3641b7cf67a25862495",
+      "findingId": "mimosa-1a47cd4e955d5a901c92d4f9",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:22:46.377Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "ccbacdf94b5b72e67ad82ce27b02e3eaf5ce64c0b9eff9bd0bcc40141d83585b",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 141,
+      "endLine": 141,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "ccbacdf94b5b72e67ad82ce27b02e3eaf5ce64c0b9eff9bd0bcc40141d83585b"
+      },
+      "sequence": 14
+    },
+    {
+      "eventId": "hook-ff8ff4583387ec0374624a122af25164",
+      "findingId": "mimosa-6a14e4e1e6d783da4eb67559",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:24:11.222Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 160,
+      "endLine": 160,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "73187fea1b4a19254db9b63c95f92ab5b53ab7b7751b7bb0ebf290bb5191eac2"
+      },
+      "sequence": 15
+    },
+    {
+      "eventId": "hook-b9447afe8ba49d71fd73458a8559de2c",
+      "findingId": "mimosa-604e82bd71199aec42d28c72",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:24:11.222Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "3077762a863789f490d9afd7e9810b58ba17892d152221db0e51b728c5a96050",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 85,
+      "endLine": 85,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "3077762a863789f490d9afd7e9810b58ba17892d152221db0e51b728c5a96050"
+      },
+      "sequence": 16
+    },
+    {
+      "eventId": "hook-437f7f9233d07ec995b6f58e72d0ae29",
+      "findingId": "mimosa-349539ff7f71b0c34ba5e370",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:24:11.222Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "71b87722ab3dab26cac09108e4c5a0c183b9a4e8856276cf0caff765962fe9dd",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 90,
+      "endLine": 90,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "71b87722ab3dab26cac09108e4c5a0c183b9a4e8856276cf0caff765962fe9dd"
+      },
+      "sequence": 17
+    },
+    {
+      "eventId": "hook-30b5bc584ec8e7b37a906660c8883e74",
+      "findingId": "mimosa-2127b37e067a675ceaf5b5b6",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:24:11.222Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "ec49555b9a7b14cfe6ce781bae543c037ccf2f05f2cd0233c469028b04a4c2a6",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 95,
+      "endLine": 95,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "ec49555b9a7b14cfe6ce781bae543c037ccf2f05f2cd0233c469028b04a4c2a6"
+      },
+      "sequence": 18
+    },
+    {
+      "eventId": "hook-3141abbd2aa84b3670c99c2368bc7941",
+      "findingId": "mimosa-500a889f26c95b9bd3cd06dd",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:24:11.222Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "66d2a1f1d073fb52c8a07ab9c9a17953502d035d4d5d23f999379576fa2f2452",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 113,
+      "endLine": 113,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "66d2a1f1d073fb52c8a07ab9c9a17953502d035d4d5d23f999379576fa2f2452"
+      },
+      "sequence": 19
+    },
+    {
+      "eventId": "hook-1e6037f97845f148862a7d8235718ae7",
+      "findingId": "mimosa-9651efa8b5bd19097fd7774a",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:24:11.222Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "a1013ae559ac06d581863fbd27931cad57c322ac4b15f811339bbe4ccfa6acd3",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 130,
+      "endLine": 130,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "a1013ae559ac06d581863fbd27931cad57c322ac4b15f811339bbe4ccfa6acd3"
+      },
+      "sequence": 20
+    },
+    {
+      "eventId": "hook-296b0e1b43e9edeb9d3059ab439f1562",
+      "findingId": "mimosa-1a47cd4e955d5a901c92d4f9",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:24:11.222Z",
+      "identity": {
+        "projectRelativeFile": "tests/conftest.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "ccbacdf94b5b72e67ad82ce27b02e3eaf5ce64c0b9eff9bd0bcc40141d83585b",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 141,
+      "endLine": 141,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "ccbacdf94b5b72e67ad82ce27b02e3eaf5ce64c0b9eff9bd0bcc40141d83585b"
+      },
+      "sequence": 21
+    },
+    {
+      "eventId": "hook-8de9ba199867e1f9cdad883b2ac5c349",
+      "findingId": "mimosa-f535752b6b717cf173ac454b",
+      "type": "finding_blocked",
+      "at": "2026-10-23T17:25:05.276Z",
+      "identity": {
+        "projectRelativeFile": "tests/test_adapters.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "7710b7a16a8d84f8c145a4e93458ba28273e9de3d698c351788cf72ae434da10",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 115,
+      "endLine": 115,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "7710b7a16a8d84f8c145a4e93458ba28273e9de3d698c351788cf72ae434da10"
+      },
+      "sequence": 22
+    },
+    {
+      "eventId": "hook-2cb8d66ee2b572697079f5cc784f2e6c",
+      "findingId": "mimosa-f535752b6b717cf173ac454b",
+      "type": "static_fix_verified",
+      "at": "2026-10-23T17:26:02.560Z",
+      "identity": {
+        "projectRelativeFile": "tests/test_adapters.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "7710b7a16a8d84f8c145a4e93458ba28273e9de3d698c351788cf72ae434da10",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 115,
+      "endLine": 115,
+      "reasonCode": "static_rescan_passed",
+      "reportedToAgent": false,
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "evidenceHash": "7710b7a16a8d84f8c145a4e93458ba28273e9de3d698c351788cf72ae434da10"
+      },
+      "sequence": 23
+    }
+  ],
+  "observedFindingIds": [],
+  "verifiedFiles": [],
+  "recordedAt": "2026-10-23T17:49:38.933Z"
+}

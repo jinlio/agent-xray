@@ -9,7 +9,7 @@
 - **工具调用树**：按类别聚合的调用统计（次数 / 错误率 / 耗时），可下钻到每一次调用
 - **成本曲线**：累积 token/费用曲线 + 峰值标注 + 分模型成本表（本地估算，价格表可自定义）
 - **单文件 HTML 输出**：数据 + ECharts 全部内联，双击即看、完全离线、可直接分享
-- **零依赖解析端**：纯 Python 标准库，`uv tool install agent-xray` 即用
+- **零依赖解析端**：纯 Python 标准库，`uv tool install agentxray` 即用（PyPI 包名 `agentxray`）
 
 ## 数据源
 

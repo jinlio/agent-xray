@@ -1,5 +1,5 @@
 [project]
-name = "agent-xray"
+name = "agentxray"
 version = "0.1.0"
 description = "Zero-instrumentation, fully local X-ray for coding-agent sessions: interactive timeline, tool-call tree, token/cost curves and failure highlights in a single shareable HTML file."
 readme = "README.md"
@@ -31,6 +31,7 @@ classifiers = [
 dependencies = []
 
 [project.scripts]
+agentxray = "agent_xray.cli:main"
 agent-xray = "agent_xray.cli:main"
 
 [project.urls]
