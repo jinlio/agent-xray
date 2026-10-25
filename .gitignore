@@ -9,3 +9,6 @@ build/
 agent-xray-out/
 launch-drafts.md
 .DS_Store
+
+# local security-plugin state
+.mimosa/

@@ -195,7 +195,7 @@ class SessionStats:
 @dataclass
 class Session:
     id: str
-    source: str  # zcode_db | claude_code
+    source: str  # zcode_db | claude_code | codex
     title: str = ""
     app_version: str = ""
     cwd: str = ""

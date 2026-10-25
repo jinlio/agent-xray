@@ -350,6 +350,137 @@ def build_cc_fixture(path: Path) -> Path:
 
 
 # ---------------------------------------------------------------------------
+# Codex rollout factory
+
+
+def _rollout(line: dict) -> str:
+    return json.dumps(line, ensure_ascii=False)
+
+
+def build_codex_fixture(path: Path) -> Path:
+    """Two root turns + one nested collab turn + interrupted turn + compaction.
+
+    Mirrors the real rollout layout: session_meta header, turn_context per
+    turn, response_items with turn attribution metadata, token_usage_record
+    per response, event_msg timing/abort, compacted markers.
+    """
+    T1, T2, T3 = "turn-0001", "turn-0002", "turn-0003"
+    lines = [
+        _rollout({"timestamp": "2026-10-01T10:00:00Z", "type": "session_meta",
+                  "payload": {"session_id": "sess-cx1", "id": "sess-cx1",
+                              "timestamp": "2026-10-01T10:00:00Z",
+                              "cwd": "C:\\tmp\\proj", "cli_version": "0.160.1",
+                              "originator": "Codex Desktop"}}),
+        # ---- turn 1: two response segments, one tool each ----
+        _rollout({"timestamp": "2026-10-01T10:00:01Z", "type": "turn_context",
+                  "payload": {"turn_id": T1, "root_turn_id": T1,
+                              "model": "gpt-5.6-terra", "collaboration_mode": "primary",
+                              "cwd": "C:\\tmp\\proj"}}),
+        _rollout({"timestamp": "2026-10-01T10:00:02Z", "type": "response_item",
+                  "payload": {"type": "message", "id": "msg_u1", "role": "user",
+                              "content": [{"type": "input_text", "text": "帮我检查这个仓库"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:00:03Z", "type": "response_item",
+                  "payload": {"type": "reasoning", "id": "rs_1",
+                              "summary": [{"type": "summary_text", "text": "先看目录"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:00:04Z", "type": "response_item",
+                  "payload": {"type": "custom_tool_call", "id": "ctc_1", "call_id": "call_1",
+                              "name": "exec", "status": "completed", "input": "ls -la"}}),
+        _rollout({"timestamp": "2026-10-01T10:00:05Z", "type": "response_item",
+                  "payload": {"type": "custom_tool_call_output", "id": "ctco_1", "call_id": "call_1",
+                              "output": [{"type": "input_text", "text": "a.py b.py"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:00:06Z", "type": "token_usage_record",
+                  "payload": {"turn_id": T1, "root_turn_id": T1, "session_id": "sess-cx1",
+                              "response_id": "resp_1",
+                              "usage": {"input_tokens": 1000, "cached_input_tokens": 500,
+                                        "cache_write_input_tokens": 100,
+                                        "output_tokens": 100, "reasoning_output_tokens": 30,
+                                        "total_tokens": 1700}}}),
+        _rollout({"timestamp": "2026-10-01T10:00:06Z", "type": "response_item",
+                  "payload": {"type": "reasoning", "id": "rs_2",
+                              "summary": [{"type": "summary_text", "text": "再看代码"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:00:07Z", "type": "response_item",
+                  "payload": {"type": "message", "id": "msg_a1", "role": "assistant",
+                              "content": [{"type": "output_text", "text": "检查完成，共 2 个文件"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:00:08Z", "type": "token_usage_record",
+                  "payload": {"turn_id": T1, "root_turn_id": T1, "session_id": "sess-cx1",
+                              "response_id": "resp_2",
+                              "usage": {"input_tokens": 1200, "cached_input_tokens": 0,
+                                        "cache_write_input_tokens": 0,
+                                        "output_tokens": 80, "reasoning_output_tokens": 10,
+                                        "total_tokens": 1280}}}),
+        _rollout({"timestamp": "2026-10-01T10:00:00Z", "type": "event_msg",
+                  "payload": {"type": "task_started", "turn_id": T1, "root_turn_id": T1,
+                              "started_at": 1790000000}}),
+        _rollout({"timestamp": "2026-10-01T10:00:09Z", "type": "event_msg",
+                  "payload": {"type": "task_complete", "turn_id": T1, "root_turn_id": T1,
+                              "started_at": 1790000000, "completed_at": 1790000009,
+                              "duration_ms": 9000}}),
+        # ---- nested collab turn under turn 1 → child session ----
+        _rollout({"timestamp": "2026-10-01T10:00:10Z", "type": "turn_context",
+                  "payload": {"turn_id": T3, "root_turn_id": T1,
+                              "model": "gpt-5.6-luna", "collaboration_mode": "review",
+                              "cwd": "C:\\tmp\\proj"}}),
+        _rollout({"timestamp": "2026-10-01T10:00:11Z", "type": "response_item",
+                  "payload": {"type": "message", "id": "msg_u3", "role": "user",
+                              "content": [{"type": "input_text", "text": "review this diff"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:00:12Z", "type": "response_item",
+                  "payload": {"type": "message", "id": "msg_a3", "role": "assistant",
+                              "content": [{"type": "output_text", "text": "review ok"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:00:13Z", "type": "token_usage_record",
+                  "payload": {"turn_id": T3, "root_turn_id": T1, "session_id": "sess-cx1",
+                              "response_id": "resp_3",
+                              "usage": {"input_tokens": 300, "output_tokens": 20,
+                                        "total_tokens": 320}}}),
+        # ---- turn 2: failed tool + interrupted ----
+        _rollout({"timestamp": "2026-10-01T10:01:00Z", "type": "turn_context",
+                  "payload": {"turn_id": T2, "root_turn_id": T2,
+                              "model": "gpt-6.1-sol", "collaboration_mode": "primary",
+                              "effort": "high", "cwd": "C:\\tmp\\proj"}}),
+        _rollout({"timestamp": "2026-10-01T10:01:01Z", "type": "response_item",
+                  "payload": {"type": "message", "id": "msg_u2", "role": "user",
+                              "content": [{"type": "input_text", "text": "继续部署"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:01:02Z", "type": "response_item",
+                  "payload": {"type": "reasoning", "id": "rs_3",
+                              "summary": [{"type": "summary_text", "text": "跑构建"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:01:03Z", "type": "response_item",
+                  "payload": {"type": "function_call", "id": "fc_1", "call_id": "call_2",
+                              "name": "request_user_input",
+                              "arguments": "{\"questions\": []}"}}),
+        _rollout({"timestamp": "2026-10-01T10:01:04Z", "type": "response_item",
+                  "payload": {"type": "function_call_output", "id": "fco_1", "call_id": "call_2",
+                              "output": [{"type": "input_text", "text": "Wall time 0.4s"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:01:05Z", "type": "response_item",
+                  "payload": {"type": "custom_tool_call", "id": "ctc_2", "call_id": "call_3",
+                              "name": "exec", "status": "failed", "input": "hugo --gc --minify"}}),
+        _rollout({"timestamp": "2026-10-01T10:01:06Z", "type": "response_item",
+                  "payload": {"type": "custom_tool_call_output", "id": "ctco_2", "call_id": "call_3",
+                              "output": [{"type": "input_text", "text": "hugo: command not found"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:01:07Z", "type": "token_usage_record",
+                  "payload": {"turn_id": T2, "root_turn_id": T2, "session_id": "sess-cx1",
+                              "response_id": "resp_4",
+                              "usage": {"input_tokens": 800, "cached_input_tokens": 400,
+                                        "output_tokens": 60, "total_tokens": 1260}}}),
+        _rollout({"timestamp": "2026-10-01T10:01:00Z", "type": "event_msg",
+                  "payload": {"type": "task_started", "turn_id": T2, "root_turn_id": T2,
+                              "started_at": 1790000060}}),
+        _rollout({"timestamp": "2026-10-01T10:01:08Z", "type": "event_msg",
+                  "payload": {"type": "turn_aborted", "turn_id": T2, "root_turn_id": T2,
+                              "reason": "interrupted", "started_at": 1790000060,
+                              "completed_at": 1790000068, "duration_ms": 8000}}),
+        # ---- noise: developer message (hidden), compaction, garbage ----
+        _rollout({"timestamp": "2026-10-01T10:01:09Z", "type": "response_item",
+                  "payload": {"type": "message", "id": "msg_d1", "role": "developer",
+                              "content": [{"type": "input_text", "text": "<app-context>"}]}}),
+        _rollout({"timestamp": "2026-10-01T10:01:10Z", "type": "compacted",
+                  "payload": {"window_number": 3, "message": "history compacted",
+                              "replacement_history": []}}),
+        "{this is not json",
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+# ---------------------------------------------------------------------------
 # pytest fixtures
 
 
@@ -361,3 +492,8 @@ def zcode_db(tmp_path) -> Path:
 @pytest.fixture
 def cc_transcript(tmp_path) -> Path:
     return build_cc_fixture(tmp_path / "transcript.jsonl")
+
+
+@pytest.fixture
+def codex_rollout(tmp_path) -> Path:
+    return build_codex_fixture(tmp_path / "rollout.jsonl")

@@ -5,18 +5,20 @@
     agent-xray --session <id>       # render one session to a single HTML file
     agent-xray transcript.jsonl     # render a Claude Code transcript
     agent-xray ~/.claude/projects/X # batch-render a directory + index page
+    agent-xray ~/.codex/sessions    # batch-render Codex CLI rollouts
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import webbrowser
 from pathlib import Path
 from typing import Any
 
 from . import __version__
-from .adapters import claude_code, zcode_db
+from .adapters import claude_code, codex, zcode_db
 from .cost import load_price_table
 from .model import Session, truncate
 from .render import render_index, render_session
@@ -85,18 +87,90 @@ class TranscriptSource:
         pass
 
 
-def pick_source(args: argparse.Namespace) -> ZcodeSource | TranscriptSource:
+class CodexSource:
+    """Codex CLI rollouts: one rollout file per session, date-nested dirs."""
+
+    kind = "codex"
+
+    def __init__(self, path: Path):
+        self.path = path
+        self.files = [path] if path.is_file() else codex.list_rollouts(path)
+        if not self.files:
+            raise FileNotFoundError(f"no rollout .jsonl files found under {path}")
+
+    def sessions(self) -> list[dict[str, Any]]:
+        out = []
+        for i, f in enumerate(self.files):
+            meta = codex.read_meta(f) or {}
+            out.append(
+                {
+                    "id": str(meta.get("session_id") or f.stem),
+                    "title": f.name,
+                    "time_created": codex.meta_ts_ms(meta) or f.stat().st_mtime * 1000,
+                    "duration_ms": None,
+                    "message_count": None,
+                    "turn_count": None,
+                    "tool_error_count": None,
+                    "_file": f,
+                    "_index": i,
+                }
+            )
+        out.sort(key=lambda x: x["time_created"] or 0, reverse=True)
+        return out
+
+    def load(self, sid: str, trunc: int, prices: Any) -> Session:
+        if len(self.files) == 1:
+            return codex.parse_file(self.files[0], trunc=trunc, prices=prices)
+        for f in self.files:
+            meta = codex.read_meta(f) or {}
+            if str(meta.get("session_id") or f.stem) == sid:
+                return codex.parse_file(f, trunc=trunc, prices=prices)
+        raise ValueError(f"rollout not found: {sid}")
+
+    def load_file(self, f: Path, trunc: int, prices: Any) -> Session:
+        return codex.parse_file(f, trunc=trunc, prices=prices)
+
+    def close(self) -> None:
+        pass
+
+
+def _sniff_jsonl(p: Path) -> str | None:
+    """Classify a .jsonl transcript by its first records: codex | claude_code."""
+    try:
+        with p.open(encoding="utf-8", errors="replace") as fh:
+            for _ in range(5):
+                line = fh.readline()
+                if not line:
+                    break
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except ValueError:
+                    return None
+                if isinstance(rec, dict):
+                    return "codex" if rec.get("type") == "session_meta" else "claude_code"
+                return None
+    except OSError:
+        return None
+    return None
+
+
+def pick_source(args: argparse.Namespace) -> ZcodeSource | TranscriptSource | CodexSource:
     raw = args.path
     if raw is None:
         return ZcodeSource(args.db)
     p = Path(raw).expanduser()
     if p.is_file() and p.suffix == ".jsonl":
-        return TranscriptSource(p)
+        return CodexSource(p) if _sniff_jsonl(p) == "codex" else TranscriptSource(p)
     if p.is_file() and (p.suffix in (".sqlite", ".db") or p.name.endswith(".sqlite")):
         return ZcodeSource(p)
     if p.is_dir():
-        if any(p.glob("*.jsonl")):
-            return TranscriptSource(p)
+        jsonls = [f for f in sorted(p.glob("**/*.jsonl")) if f.stat().st_size > 0]
+        if jsonls:
+            kind = next((k for k in (_sniff_jsonl(f) for f in jsonls[:5]) if k), "claude_code")
+            return CodexSource(p) if kind == "codex" else TranscriptSource(p)
         nested = p / "db.sqlite"
         if nested.exists():
             return ZcodeSource(nested)
@@ -105,7 +179,9 @@ def pick_source(args: argparse.Namespace) -> ZcodeSource | TranscriptSource:
     return ZcodeSource(p)
 
 
-def resolve_session_id(source: ZcodeSource | TranscriptSource, sel: str | None) -> tuple[str, dict[str, Any]]:
+def resolve_session_id(
+    source: ZcodeSource | TranscriptSource | CodexSource, sel: str | None
+) -> tuple[str, dict[str, Any]]:
     sessions = source.sessions()
     if not sessions:
         raise ValueError("no sessions found")
@@ -219,7 +295,7 @@ def build_parser() -> argparse.ArgumentParser:
         description="把编码 agent 的会话日志变成一张可交互的执行 X 光片（单个 HTML 文件）。",
     )
     p.add_argument("path", nargs="?",
-                   help="Claude Code .jsonl 转录 / ZCode db.sqlite / 转录目录；缺省自动发现 ZCode db")
+                   help="Claude Code .jsonl 转录 / Codex rollout / ZCode db.sqlite / 目录；缺省自动发现 ZCode db")
     p.add_argument("-l", "--list", action="store_true", help="列出可分析的会话")
     p.add_argument("-s", "--summary", action="store_true", help="在终端打印结构化摘要（含失败点）")
     p.add_argument("--session", metavar="ID", help="会话 id（支持前缀或 --list 序号）")
@@ -229,16 +305,38 @@ def build_parser() -> argparse.ArgumentParser:
                    help="文本字段截断长度（默认 2000 字符）")
     p.add_argument("--full", action="store_true", help="不截断（HTML 可能非常大）")
     p.add_argument("--db", help="显式指定 ZCode db.sqlite 路径")
-    p.add_argument("--price-file", help="自定义价格表 JSON（覆盖内置估算）")
+    p.add_argument("--price-file", help="自定义价格表 JSON（条目与内置合并、靠前优先；"
+                                        "默认自动加载 ~/.agent-xray/prices.json）")
+    p.add_argument("--dump-prices", nargs="?", const="-", metavar="FILE",
+                   help="导出当前生效的价格表 JSON（不带 FILE 打到 stdout），可编辑后作为自定义价格表")
     p.add_argument("--limit", type=int, default=50, metavar="N", help="目录批量模式最多渲染 N 个（默认 50）")
     p.add_argument("--all", action="store_true", help="db 模式下渲染全部会话（配合 --limit）")
     p.add_argument("-V", "--version", action="version", version=f"agent-xray {__version__}")
     return p
 
 
+def _dump_prices(target: str, prices: Any) -> int:
+    payload = json.dumps(prices.as_file(), ensure_ascii=False, indent=2)
+    if target == "-":
+        print(payload)
+        return 0
+    out = Path(target).expanduser()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(payload + "\n", encoding="utf-8")
+    print(f"✓ 价格表已导出: {out}（编辑后放到 ~/.agent-xray/prices.json 即自动生效）")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    prices = load_price_table(args.price_file)
+    try:
+        prices = load_price_table(args.price_file)
+    except ValueError as e:
+        print(f"错误: {e}", file=sys.stderr)
+        return 2
+
+    if args.dump_prices is not None:
+        return _dump_prices(args.dump_prices, prices)
 
     try:
         source = pick_source(args)
@@ -265,7 +363,7 @@ def main(argv: list[str] | None = None) -> int:
         source.close()
 
 
-def _print_list(source: ZcodeSource | TranscriptSource) -> None:
+def _print_list(source: ZcodeSource | TranscriptSource | CodexSource) -> None:
     sessions = source.sessions()
     if not sessions:
         print("没有找到会话。")
@@ -283,7 +381,7 @@ def _print_list(source: ZcodeSource | TranscriptSource) -> None:
     print(f"\n共 {len(sessions)} 个会话。用 --summary 查看、--session <序号或id前缀> 渲染。")
 
 
-def _render(source: ZcodeSource | TranscriptSource, args, prices) -> int:
+def _render(source: ZcodeSource | TranscriptSource | CodexSource, args, prices) -> int:
     sessions = source.sessions()
     if isinstance(source, TranscriptSource) and args.path and Path(args.path).is_file():
         targets = [(source.files[0].stem, sessions[0])]
@@ -301,6 +399,8 @@ def _render(source: ZcodeSource | TranscriptSource, args, prices) -> int:
         render_session(session, out)
         outputs.append(out)
         st = session.stats
+        for w in session.warnings:
+            print(f"  ⚠ {w}", file=sys.stderr)
         entries.append(
             {
                 "path": out.name,

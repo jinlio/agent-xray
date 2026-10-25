@@ -13,7 +13,11 @@ Handled quirks:
 - tool_use / tool_result live in different lines and pair via
   ``id`` <-> ``tool_use_id``;
 - ``isSidechain`` records (subagent runs) are pulled out into child sessions,
-  grouped by parentUuid chain root.
+  grouped by parentUuid chain root;
+- Claude Code 2.1+ writes each subagent run to its own file under
+  ``<session-id>/subagents/agent-*.jsonl`` with *every* record flagged
+  ``isSidechain`` — those parse as standalone sessions, and a main transcript
+  picks up its sibling subagent files as child sessions.
 """
 
 from __future__ import annotations
@@ -46,7 +50,20 @@ _TEXT_SIG_LEN = 120
 
 def list_transcripts(directory: str | Path) -> list[Path]:
     d = Path(directory).expanduser()
-    return sorted(p for p in d.glob("*.jsonl") if p.is_file() and p.stat().st_size > 0)
+    return sorted(p for p in d.glob("**/*.jsonl") if p.is_file() and p.stat().st_size > 0)
+
+
+_MAX_SIBLING_SUBAGENTS = 50
+
+
+def _sibling_subagents(p: Path) -> list[Path]:
+    """Subagent files for a main transcript: ``<stem>/subagents/*.jsonl``."""
+    sub = p.parent / p.stem / "subagents"
+    if not sub.is_dir():
+        return []
+    return sorted(f for f in sub.glob("*.jsonl") if f.is_file() and f.stat().st_size > 0)[
+        :_MAX_SIBLING_SUBAGENTS
+    ]
 
 
 def _ts_ms(value: Any) -> int | None:
@@ -86,21 +103,45 @@ def parse_file(path: str | Path, trunc: int = 2000, prices: Any = None) -> Sessi
     main = [r for r in records if not r.get("isSidechain")]
     side = [r for r in records if r.get("isSidechain")]
 
+    # A standalone subagent file (Claude Code 2.1+ layout) flags its
+    # conversational records as isSidechain; attachments and api-request lines
+    # carry no flag, so judge by the absence of user/assistant records in the
+    # main stream. Such a file is one subagent's whole session, not a
+    # sidechain of an empty parent.
+    usable_main = [r for r in main if r.get("type") in ("user", "assistant")]
+    standalone = not usable_main and bool(side)
+    if standalone:
+        main, side = side, []
+
     session, bad = _build_session(p.stem, main, trunc)
     session.stats.parse_error_count = bad_lines
     if bad:
         session.warnings.append(f"{bad} unparseable line(s) skipped")
     session.title = _extract_title(main, session.title)
+    if standalone and not session.title:
+        first_user = next((t.user_text for t in session.turns if t.user_text), "")
+        if first_user:
+            session.title = truncate(f"(subagent) {first_user}", 80)
 
-    if side:
-        session.child_sessions = _build_sidechains(p.stem, side, trunc)
+    inline_children = _build_sidechains(p.stem, side, trunc) if side else []
+    session.child_sessions = list(inline_children)
+    # Claude Code 2.1+: subagent runs live in sibling files next to this
+    # transcript; attach them as child sessions. Each is finalized by its own
+    # recursive parse_file call, so only inline children get finalized below.
+    for f in _sibling_subagents(p):
+        try:
+            session.child_sessions.append(parse_file(f, trunc=trunc, prices=prices))
+        except OSError as e:
+            session.warnings.append(f"subagent file unreadable: {f.name}: {e}")
 
     from ..model import finalize
 
     finalize(session, prices)
     session.stats.failures.sort(key=lambda f: (f.at or 0, f.kind))
-    for child in session.child_sessions:
+    for child in inline_children:
         finalize(child, prices)
+    if not session.turns and not session.child_sessions:
+        session.warnings.append("no turns recognized — unsupported transcript format?")
     return session
 
 

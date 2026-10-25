@@ -1,0 +1,328 @@
+{
+ "app_version": "0.160.1",
+ "child_sessions": [
+  {
+   "app_version": "",
+   "child_sessions": [],
+   "created_at": null,
+   "cwd": "",
+   "duration_ms": null,
+   "id": "sess-cx1#collab-turn-000",
+   "models": [
+    "gpt-5.6-luna"
+   ],
+   "source": "codex",
+   "stats": {
+    "aux_call_count": 0,
+    "cost": {
+     "cache_read": 0.0,
+     "cache_write": 0.0,
+     "input": 0.0007499999999999999,
+     "output": 0.0002,
+     "total": 0.0009499999999999999
+    },
+    "failures": [],
+    "hidden_message_count": 0,
+    "model_call_count": 1,
+    "parse_error_count": 0,
+    "retry_count": 0,
+    "tool_count": 0,
+    "tool_error_count": 0,
+    "tool_top": [],
+    "turn_count": 1,
+    "usage": {
+     "cache_read": 0,
+     "cache_write": 0,
+     "input": 300,
+     "output": 20,
+     "reasoning": 0
+    }
+   },
+   "title": "subagent run (review · gpt-5.6-luna)",
+   "turns": [
+    {
+     "annotations": [],
+     "duration_ms": 1000,
+     "id": "turn-0003",
+     "index": 0,
+     "model_calls": [
+      {
+       "agent": "",
+       "attempt": 1,
+       "cost": {
+        "cache_read": 0.0,
+        "cache_write": 0.0,
+        "input": 0.0007499999999999999,
+        "output": 0.0002,
+        "total": 0.0009499999999999999
+       },
+       "duration_ms": null,
+       "error": "",
+       "finish_reason": "stop",
+       "id": "turn-0003-seg0",
+       "model": "gpt-5.6-luna",
+       "provider": "",
+       "query_source": "main_turn",
+       "reasoning_text": "",
+       "started_at": 1790848811000,
+       "status": "completed",
+       "text": "review ok",
+       "tool_uses": [],
+       "usage": {
+        "cache_read": 0,
+        "cache_write": 0,
+        "input": 300,
+        "output": 20,
+        "reasoning": 0
+       }
+      }
+     ],
+     "started_at": 1790848811000,
+     "status": "ok",
+     "user_text": "review this diff"
+    }
+   ],
+   "updated_at": null,
+   "warnings": []
+  }
+ ],
+ "created_at": 1790848800000,
+ "cwd": "C:\\tmp\\proj",
+ "duration_ms": 70000,
+ "id": "sess-cx1",
+ "models": [
+  "gpt-5.6-terra",
+  "gpt-6.1-sol"
+ ],
+ "source": "codex",
+ "stats": {
+  "aux_call_count": 0,
+  "cost": {
+   "cache_read": 0.000225,
+   "cache_write": 0.0003125,
+   "input": 0.0075,
+   "output": 0.0024000000000000002,
+   "total": 0.010437499999999999
+  },
+  "failures": [
+   {
+    "at": 1790000060000,
+    "kind": "interrupted",
+    "message": "turn aborted (interrupted)",
+    "ref": "turn-0002",
+    "turn_index": 1
+   },
+   {
+    "at": 1790000060000,
+    "kind": "long_turn",
+    "message": "turn took 848805s (> 300s threshold)",
+    "ref": "turn-0002",
+    "turn_index": 1
+   },
+   {
+    "at": 1790848861000,
+    "kind": "tool_error",
+    "message": "exec: hugo: command not found",
+    "ref": "call_3",
+    "turn_index": 1
+   }
+  ],
+  "hidden_message_count": 1,
+  "model_call_count": 3,
+  "parse_error_count": 1,
+  "retry_count": 0,
+  "tool_count": 3,
+  "tool_error_count": 1,
+  "tool_top": [
+   {
+    "category": "other",
+    "count": 2,
+    "errors": 1,
+    "name": "exec",
+    "total_ms": 0
+   },
+   {
+    "category": "other",
+    "count": 1,
+    "errors": 0,
+    "name": "request_user_input",
+    "total_ms": 0
+   }
+  ],
+  "turn_count": 2,
+  "usage": {
+   "cache_read": 900,
+   "cache_write": 100,
+   "input": 3000,
+   "output": 240,
+   "reasoning": 40,
+   "total": 4240
+  }
+ },
+ "title": "帮我检查这个仓库",
+ "turns": [
+  {
+   "annotations": [],
+   "duration_ms": 9000,
+   "id": "turn-0001",
+   "index": 0,
+   "model_calls": [
+    {
+     "agent": "",
+     "attempt": 1,
+     "cost": {
+      "cache_read": 0.000125,
+      "cache_write": 0.0003125,
+      "input": 0.0025,
+      "output": 0.001,
+      "total": 0.0039375
+     },
+     "duration_ms": null,
+     "error": "",
+     "finish_reason": "tool-calls",
+     "id": "turn-0001-seg0",
+     "model": "gpt-5.6-terra",
+     "provider": "",
+     "query_source": "main_turn",
+     "reasoning_text": "先看目录",
+     "started_at": 1790848802000,
+     "status": "completed",
+     "text": "",
+     "tool_uses": [
+      {
+       "category": "other",
+       "duration_ms": null,
+       "error": "",
+       "exit_code": null,
+       "id": "call_1",
+       "input": "ls -la",
+       "name": "exec",
+       "output": "a.py b.py",
+       "started_at": 1790848804000,
+       "status": "ok"
+      }
+     ],
+     "usage": {
+      "cache_read": 500,
+      "cache_write": 100,
+      "input": 1000,
+      "output": 100,
+      "reasoning": 30,
+      "total": 1700
+     }
+    },
+    {
+     "agent": "",
+     "attempt": 1,
+     "cost": {
+      "cache_read": 0.0,
+      "cache_write": 0.0,
+      "input": 0.0029999999999999996,
+      "output": 0.0008,
+      "total": 0.0037999999999999996
+     },
+     "duration_ms": null,
+     "error": "",
+     "finish_reason": "stop",
+     "id": "turn-0001-seg1",
+     "model": "gpt-5.6-terra",
+     "provider": "",
+     "query_source": "main_turn",
+     "reasoning_text": "再看代码",
+     "started_at": 1790848806000,
+     "status": "completed",
+     "text": "检查完成，共 2 个文件",
+     "tool_uses": [],
+     "usage": {
+      "cache_read": 0,
+      "cache_write": 0,
+      "input": 1200,
+      "output": 80,
+      "reasoning": 10,
+      "total": 1280
+     }
+    }
+   ],
+   "started_at": 1790000000000,
+   "status": "ok",
+   "user_text": "帮我检查这个仓库"
+  },
+  {
+   "annotations": [
+    {
+     "at": 1790848870000,
+     "kind": "compaction",
+     "message": "history compacted (window 3)"
+    }
+   ],
+   "duration_ms": 848805000,
+   "id": "turn-0002",
+   "index": 1,
+   "model_calls": [
+    {
+     "agent": "",
+     "attempt": 1,
+     "cost": {
+      "cache_read": 0.0001,
+      "cache_write": 0.0,
+      "input": 0.002,
+      "output": 0.0006000000000000001,
+      "total": 0.0026999999999999997
+     },
+     "duration_ms": null,
+     "error": "",
+     "finish_reason": "tool-calls",
+     "id": "turn-0002-seg0",
+     "model": "gpt-6.1-sol",
+     "provider": "",
+     "query_source": "main_turn",
+     "reasoning_text": "跑构建",
+     "started_at": 1790848861000,
+     "status": "completed",
+     "text": "",
+     "tool_uses": [
+      {
+       "category": "other",
+       "duration_ms": null,
+       "error": "",
+       "exit_code": null,
+       "id": "call_2",
+       "input": "{\"questions\": []}",
+       "name": "request_user_input",
+       "output": "Wall time 0.4s",
+       "started_at": 1790848863000,
+       "status": "ok"
+      },
+      {
+       "category": "other",
+       "duration_ms": null,
+       "error": "hugo: command not found",
+       "exit_code": null,
+       "id": "call_3",
+       "input": "hugo --gc --minify",
+       "name": "exec",
+       "output": "hugo: command not found",
+       "started_at": 1790848865000,
+       "status": "error"
+      }
+     ],
+     "usage": {
+      "cache_read": 400,
+      "cache_write": 0,
+      "input": 800,
+      "output": 60,
+      "reasoning": 0,
+      "total": 1260
+     }
+    }
+   ],
+   "started_at": 1790000060000,
+   "status": "interrupted",
+   "user_text": "继续部署"
+  }
+ ],
+ "updated_at": 1790848870000,
+ "warnings": [
+  "1 unparseable line(s) skipped"
+ ]
+}

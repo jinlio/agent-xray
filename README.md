@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/agentxray-replay)](https://pypi.org/project/agentxray-replay/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**零埋点、纯本地的编码 agent 会话回放器**——把 Claude Code / ZCode 的会话日志变成一张可交互的**执行 X 光片**：执行时间轴、工具调用树、token/成本曲线、失败点高亮。输出**单个 HTML 文件**，双击即看，可直接扔进 PR / 邮件分享。
+**零埋点、纯本地的编码 agent 会话回放器**——把 Claude Code / Codex / ZCode 的会话日志变成一张可交互的**执行 X 光片**：执行时间轴、工具调用树、token/成本曲线、失败点高亮。输出**单个 HTML 文件**，双击即看，可直接扔进 PR / 邮件分享。
 
 ![Agent X-Ray 演示](docs/demo.gif)
 
@@ -33,10 +33,16 @@ agent-xray --summary               # 最近一次会话的终端摘要（含失�
 agent-xray --session 3             # 渲染第 3 个会话 → ./agent-xray-out/xxx-xray.html
 agent-xray --session 3 --open      # 渲染并在浏览器打开
 
-# Claude Code 转录（experimental）
+# Claude Code 转录
 agent-xray ~/.claude/projects/<proj>/<session>.jsonl
-agent-xray ~/.claude/projects/<proj>/        # 目录批量 + 索引页
+agent-xray ~/.claude/projects/<proj>/        # 目录批量 + 索引页（自动带上 subagents/ 子代理）
+
+# Codex CLI rollout
+agent-xray ~/.codex/sessions                 # 按日期嵌套的 rollout 目录，递归发现
+agent-xray ~/.codex/sessions/2026/10/07/rollout-xxx.jsonl
 ```
+
+格式自动识别：`.jsonl` 按首行内容判定是 Claude Code 转录还是 Codex rollout，喂错格式会得到明确警告而不是一份空白报告。
 
 终端摘要示例（真实会话输出）：
 
@@ -57,10 +63,31 @@ agent-xray ~/.claude/projects/<proj>/        # 目录批量 + 索引页
 | 数据源 | 位置 | 状态 |
 |---|---|---|
 | **ZCode** | `~/.zcode/cli/db/db.sqlite`（自动发现，只读快照，不影响运行中的 ZCode） | ✅ 主源，实测 6 周 / 141 会话 / 9.8k 模型调用全量解析通过 |
-| **Claude Code** | `~/.claude/projects/**/*.jsonl` | ⚠️ **experimental**：按公开格式文档开发（本机无 CC 日志），含流式拆行合并、tool_use↔tool_result 配对、sidechain 子代理提取；遇到不兼容请附（脱敏）样本提 issue |
+| **Claude Code** | `~/.claude/projects/**/*.jsonl` | ✅ 实测 2.1.x：流式拆行合并、tool_use↔tool_result 配对、`<session>/subagents/` 独立子代理文件与内联 sidechain 双格式支持 |
+| **Codex** | `~/.codex/sessions/**/*.jsonl` | ✅ 实测 0.14x–0.160.x / 55 个 rollout：turn_context 轮次、usage 逐响应归因（老格式自动回退 token_count）、嵌套协作轮 → 子代理标签页、turn_aborted → 中断高亮 |
 | 通用 | 自定义适配器（约 100 行 Python 即可接入新格式） | 🚧 v1.0 计划 |
 
 其他命令：`--list`（列表）、`--all --limit 20`（批量渲染 + 索引页）、`--trunc N` / `--full`（文本截断控制）、`--price-file`（自定义价格表）、`--db`（指定 sqlite 路径）。
+
+## 自定义价格
+
+成本是本地估算，价格表三层优先：`--price-file` 指定的文件 > 自动加载的 `~/.agent-xray/prices.json` > 内置价格。文件格式：
+
+```json
+{
+  "cache_read_factor": 0.1,
+  "cache_write_factor": 1.25,
+  "models": [
+    {"match": "gpt-5.6-terra", "input": 2.5, "output": 10.0},
+    {"match": "codex-auto-review", "input": null, "output": null}
+  ]
+}
+```
+
+- `match` 按前缀匹配（大小写不敏感），**靠前的条目优先**——只需覆盖你关心的模型，其余仍用内置价格；想完全换成自己的表就加 `"replace_defaults": true`
+- `input` / `output` 是每百万 token 的美元单价；设为 `null` 表示该模型不计价（不进成本合计）
+- `cache_read_factor` / `cache_write_factor` 控制缓存计价折扣（默认 0.1x / 1.25x，对齐 ccusage 口径）
+- `agent-xray --dump-prices` 导出当前生效的完整价格表（带文件参数则写入文件），改完放到 `~/.agent-xray/prices.json` 即全局生效、无需再传参数
 
 ## 隐私
 
@@ -91,12 +118,12 @@ ccusage 回答"花了多少钱"（账单视角），Agent X-Ray 回答"agent 到
 ```bash
 git clone <repo> && cd agent-xray
 uv sync            # 安装 dev 依赖（pytest/ruff）
-uv run pytest      # 16 个测试：合成 fixture + golden 快照 + 健壮性 + CLI
+uv run pytest      # 26 个测试：合成 fixture + golden 快照 + 健壮性 + CLI
 uv run ruff check src tests
 uv run agent-xray --list
 ```
 
-架构刻意保持极简：`格式适配层（zcode_db / claude_code）→ 统一事件模型（Session/Turn/ModelCall/ToolUse）→ 单文件渲染器`。适配 Claude Code 约花了一个下午；欢迎为新 agent 提 PR。
+架构刻意保持极简：`格式适配层（zcode_db / claude_code / codex）→ 统一事件模型（Session/Turn/ModelCall/ToolUse）→ 单文件渲染器`。适配 Claude Code 约花了一个下午，Codex 约一个下午；欢迎为新 agent 提 PR。
 
 ## License
 
