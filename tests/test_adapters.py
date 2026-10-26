@@ -502,6 +502,8 @@ def test_render_smoke(zcode_db, cc_transcript, tmp_path, prices):
     assert 'id="xray-data"' in html
     assert "echarts" in html.lower()
     assert "帮我修复登录 bug" in html  # embedded payload keeps CJK readable
+    assert '"时间轴"' in html and '"Timeline"' in html  # bilingual UI dictionary inlined
+    assert "xray-lang" in html  # language choice persisted across reports
     assert out.stat().st_size > 500_000  # echarts inlined → fully offline
 
     cc = cc_adapter.parse_file(cc_transcript, prices=prices)
@@ -514,7 +516,11 @@ def test_render_smoke(zcode_db, cc_transcript, tmp_path, prices):
                {"path": "cc.html", "title": "c", "when": "w", "turns": 2, "calls": 3,
                 "fails": 1, "tokens": "2k", "cost": "$0.02"}]
     idx = render_index(entries, tmp_path / "out" / "index.html")
-    assert "x.html" in idx.read_text(encoding="utf-8")
+    idx_html = idx.read_text(encoding="utf-8")
+    assert "x.html" in idx_html
+    assert "会话索引" in idx_html and "Session Index" in idx_html  # bilingual index
+    assert 'data-lang="zh"' in idx_html and 'data-lang="en"' in idx_html
+    assert "xray-lang" in idx_html
 
 
 def test_cli_list_and_summary(zcode_db, capsys):

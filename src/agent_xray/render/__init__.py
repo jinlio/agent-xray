@@ -44,12 +44,79 @@ def render_session(
     return out
 
 
-def render_index(
-    entries: list[dict[str, Any]],
-    out_path: str | Path,
-    title: str = "Agent X-Ray — 会话索引",
-) -> Path:
-    """Render the batch-mode index page. entries: [{path, title, created_at, turns, cost, ...}]"""
+_INDEX_TEMPLATE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent X-Ray — Session Index</title>
+<style>
+body{background:#0d1117;color:#e6edf3;font:14px -apple-system,'Segoe UI','PingFang SC',sans-serif;margin:24px}
+.top{display:flex;align-items:center;gap:12px}
+.top h1{font-size:18px;margin:0;flex:1;min-width:0}
+.lang{display:flex;gap:2px;flex:none}
+.lang button{background:#161b22;border:1px solid #2d333b;color:#8a93a5;border-radius:4px;padding:3px 9px;font-size:12px;cursor:pointer;font-family:inherit}
+.lang button.on{color:#e6edf3;border-color:#4c8dff}
+table{border-collapse:collapse;width:100%;margin-top:14px}
+th,td{padding:7px 10px;border-bottom:1px solid #2d333b;text-align:left;font-size:13px}
+th{color:#8a93a5;font-weight:500}
+tr:hover td{background:#1c2330;cursor:pointer}
+.num{text-align:right;font-family:ui-monospace,monospace}
+p{color:#8a93a5;font-size:12px}
+</style>
+</head>
+<body>
+<div class="top"><h1 id="idx-title">Agent X-Ray — Session Index</h1>
+<div class="lang"><button data-lang="zh">中文</button><button data-lang="en">EN</button></div></div>
+<p id="idx-sub"></p>
+<table><thead><tr>
+<th data-i18n="colTitle">Title</th><th data-i18n="colWhen">Started</th>
+<th class="num" data-i18n="colTurns">Turns</th><th class="num" data-i18n="colCalls">Calls</th>
+<th class="num" data-i18n="colFails">Failures</th><th class="num" data-i18n="colTokens">Tokens</th>
+<th class="num" data-i18n="colCost">Cost</th>
+</tr></thead><tbody>__ROWS__</tbody></table>
+<script>
+var I18N = {
+  zh: {indexTitle: "Agent X-Ray — 会话索引", indexSub: "{n} 个会话 · 点击行打开对应 X 光片",
+       colTitle: "标题", colWhen: "开始时间", colTurns: "轮次", colCalls: "调用",
+       colFails: "失败", colTokens: "tokens", colCost: "成本"},
+  en: {indexTitle: "Agent X-Ray — Session Index", indexSub: "{n} sessions · click a row to open its X-ray",
+       colTitle: "Title", colWhen: "Started", colTurns: "Turns", colCalls: "Calls",
+       colFails: "Failures", colTokens: "Tokens", colCost: "Cost"}
+};
+var COUNT = __COUNT__;
+var LANG = (function () {
+  try { var s = localStorage.getItem("xray-lang"); if (s === "zh" || s === "en") return s; } catch (e) {}
+  return ((navigator.language || "en").toLowerCase().indexOf("zh") === 0) ? "zh" : "en";
+})();
+function apply() {
+  var d = I18N[LANG] || I18N.en;
+  document.documentElement.lang = LANG === "zh" ? "zh-CN" : "en";
+  document.title = d.indexTitle;
+  document.getElementById("idx-title").textContent = d.indexTitle;
+  document.getElementById("idx-sub").textContent = d.indexSub.replace("{n}", COUNT);
+  document.querySelectorAll("[data-i18n]").forEach(function (n) {
+    if (d[n.dataset.i18n]) n.textContent = d[n.dataset.i18n];
+  });
+  document.querySelectorAll(".lang button").forEach(function (b) {
+    b.classList.toggle("on", b.dataset.lang === LANG);
+  });
+}
+document.querySelectorAll(".lang button").forEach(function (b) {
+  b.onclick = function () {
+    LANG = b.dataset.lang;
+    try { localStorage.setItem("xray-lang", LANG); } catch (e) {}
+    apply();
+  };
+});
+apply();
+</script>
+</body></html>
+"""
+
+
+def render_index(entries: list[dict[str, Any]], out_path: str | Path) -> Path:
+    """Render the batch-mode index page. entries: [{path, title, when, turns, calls, fails, tokens, cost}]"""
     rows = "".join(
         "<tr onclick=\"location.href='{path}'\"><td>{title}</td><td>{when}</td>"
         "<td class=num>{turns}</td><td class=num>{calls}</td><td class=num>{fails}</td>"
@@ -65,20 +132,7 @@ def render_index(
         )
         for e in entries
     )
-    html = (
-        "<!doctype html><html lang=zh-CN><head><meta charset=utf-8>"
-        f"<title>{_esc(title)}</title><style>"
-        "body{background:#0d1117;color:#e6edf3;font:14px -apple-system,'PingFang SC',sans-serif;"
-        "margin:24px}table{border-collapse:collapse;width:100%}"
-        "th,td{padding:7px 10px;border-bottom:1px solid #2d333b;text-align:left;font-size:13px}"
-        "th{color:#8a93a5;font-weight:500}tr:hover td{background:#1c2330;cursor:pointer}"
-        ".num{text-align:right;font-family:ui-monospace,monospace}h1{font-size:18px}"
-        "p{color:#8a93a5;font-size:12px}</style></head><body>"
-        f"<h1>{_esc(title)}</h1><p>{len(entries)} sessions · 点击行打开对应 X 光片</p>"
-        "<table><thead><tr><th>标题</th><th>开始时间</th><th class=num>轮次</th>"
-        "<th class=num>调用</th><th class=num>失败</th><th class=num>tokens</th>"
-        "<th class=num>成本</th></tr></thead><tbody>" + rows + "</tbody></table></body></html>"
-    )
+    html = _INDEX_TEMPLATE.replace("__ROWS__", rows).replace("__COUNT__", str(len(entries)))
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")

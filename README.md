@@ -5,46 +5,50 @@
 [![Python](https://img.shields.io/pypi/pyversions/agentxray-replay)](https://pypi.org/project/agentxray-replay/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**零埋点、纯本地的编码 agent 会话回放器**——把 Claude Code / Codex / ZCode 的会话日志变成一张可交互的**执行 X 光片**：执行时间轴、工具调用树、token/成本曲线、失败点高亮。输出**单个 HTML 文件**，双击即看，可直接扔进 PR / 邮件分享。
+**English** | [简体中文](https://github.com/jinlio/agent-xray/blob/main/README.zh-CN.md)
 
-![Agent X-Ray 演示](docs/demo.gif)
+**Zero-instrumentation, fully local session replay for coding agents** — turn Claude Code / Codex / ZCode session logs into an interactive **execution X-ray**: a timeline, tool-call tree, token/cost curves and highlighted failures. The output is a **single HTML file** you can double-click, drop into a PR, or email to someone.
 
-"刚才那 40 分钟 agent 到底干了什么？钱花哪了？从哪一步开始跑偏？"——`grep`/`jq` 翻几千条 JSONL 回答不了这些问题，云端观测平台（Langfuse/LangSmith）要求改代码接入且数据要出本地。Agent X-Ray 直接吃**已经存在的**本地日志，什么都不用改。
+![Agent X-Ray demo](https://raw.githubusercontent.com/jinlio/agent-xray/main/docs/demo.gif)
 
-## 它长什么样
+"What did the agent actually do for those 40 minutes? Where did the money go? Which step went off the rails?" — `grep`/`jq` over thousands of JSONL lines cannot answer that, and cloud observability platforms (Langfuse/LangSmith) require instrumenting your code and shipping data off your machine. Agent X-Ray reads the logs **already on your disk**; nothing to change.
 
-**执行时间轴**——每轮对话一条泳道，上层是模型调用（按来源着色），下层是工具调用（按类别着色），失败红框、重试黄边、上下文压缩菱形标记。点击任意段展开完整详情（思考过程 / 回复 / 工具输入输出 / token / 成本）：
+## What it looks like
 
-![时间轴](docs/screenshot-timeline.png)
+**Execution timeline** — one swim lane per turn: model calls on top (colored by source), tool calls below (colored by category), red outlines for failures, yellow edges for retries, diamond markers for context compaction. Click any segment for full details (reasoning / response / tool I/O / tokens / cost):
 
-**成本曲线**——随时间累积的 token/费用，标注峰值，按模型分列：
+![Timeline](https://raw.githubusercontent.com/jinlio/agent-xray/main/docs/screenshot-timeline.png)
 
-![成本](docs/screenshot-cost.png)
+**Cost curve** — cumulative tokens/spend over time, with peak markers and a per-model breakdown:
 
-## 30 秒上手
+![Cost](https://raw.githubusercontent.com/jinlio/agent-xray/main/docs/screenshot-cost.png)
+
+The report UI is **bilingual (English / Chinese)**: it follows your browser language on first open, and the header toggle (中文 / EN) remembers your choice. Session content itself is shown exactly as recorded.
+
+## Quick start
 
 ```bash
-# 安装（零依赖，纯标准库 + 内联 ECharts）
-uv tool install agentxray-replay   # 或: pipx install agentxray-replay / pip install agentxray-replay
-                                   # PyPI 包名 agentxray-replay（agent-xray 被占用），命令可简写 agent-xray
+# install (zero runtime deps: stdlib + inlined ECharts)
+uv tool install agentxray-replay   # or: pipx install agentxray-replay / pip install agentxray-replay
+                                   # PyPI name is agentxray-replay (agent-xray was taken); the command is agent-xray
 
-agent-xray                         # 列出 ZCode 的全部本地会话
-agent-xray --summary               # 最近一次会话的终端摘要（含失败点清单）
-agent-xray --session 3             # 渲染第 3 个会话 → ./agent-xray-out/xxx-xray.html
-agent-xray --session 3 --open      # 渲染并在浏览器打开
+agent-xray                         # list all local ZCode sessions
+agent-xray --summary               # terminal summary of the latest session (with failure list)
+agent-xray --session 3             # render session #3 → ./agent-xray-out/xxx-xray.html
+agent-xray --session 3 --open      # render and open in the browser
 
-# Claude Code 转录
+# Claude Code transcripts
 agent-xray ~/.claude/projects/<proj>/<session>.jsonl
-agent-xray ~/.claude/projects/<proj>/        # 目录批量 + 索引页（自动带上 subagents/ 子代理）
+agent-xray ~/.claude/projects/<proj>/        # batch + index page (subagents/ picked up automatically)
 
-# Codex CLI rollout
-agent-xray ~/.codex/sessions                 # 按日期嵌套的 rollout 目录，递归发现
+# Codex CLI rollouts
+agent-xray ~/.codex/sessions                 # date-nested rollout tree, discovered recursively
 agent-xray ~/.codex/sessions/2026/10/07/rollout-xxx.jsonl
 ```
 
-格式自动识别：`.jsonl` 按首行内容判定是 Claude Code 转录还是 Codex rollout，喂错格式会得到明确警告而不是一份空白报告。
+Format auto-detection: `.jsonl` files are classified by their first record (Claude Code transcript vs Codex rollout); feeding the wrong format produces a clear warning instead of an empty report.
 
-终端摘要示例（真实会话输出）：
+Terminal summary example (real session output; CLI labels are currently Chinese, while the HTML report is bilingual):
 
 ```
 # 优化 deep-research-skill 项目计划
@@ -58,20 +62,20 @@ agent-xray ~/.codex/sessions/2026/10/07/rollout-xxx.jsonl
   工具 Top: Bash×38(1 err) · Write×24 · Edit×23(2 err) · Read×18
 ```
 
-## 支持的数据源
+## Supported sources
 
-| 数据源 | 位置 | 状态 |
+| Source | Location | Status |
 |---|---|---|
-| **ZCode** | `~/.zcode/cli/db/db.sqlite`（自动发现，只读快照，不影响运行中的 ZCode） | ✅ 主源，实测 6 周 / 141 会话 / 9.8k 模型调用全量解析通过 |
-| **Claude Code** | `~/.claude/projects/**/*.jsonl` | ✅ 实测 2.1.x：流式拆行合并、tool_use↔tool_result 配对、`<session>/subagents/` 独立子代理文件与内联 sidechain 双格式支持 |
-| **Codex** | `~/.codex/sessions/**/*.jsonl` | ✅ 实测 0.14x–0.160.x / 55 个 rollout：turn_context 轮次、usage 逐响应归因（老格式自动回退 token_count）、嵌套协作轮 → 子代理标签页、turn_aborted → 中断高亮 |
-| 通用 | 自定义适配器（约 100 行 Python 即可接入新格式） | 🚧 v1.0 计划 |
+| **ZCode** | `~/.zcode/cli/db/db.sqlite` (auto-discovered, read-only snapshot; a running ZCode is unaffected) | ✅ Primary source; 6 weeks / 141 sessions / 9.8k model calls fully parsed |
+| **Claude Code** | `~/.claude/projects/**/*.jsonl` | ✅ Verified on 2.1.x: streamed-line merging, tool_use↔tool_result pairing, both `<session>/subagents/` files and inline sidechains |
+| **Codex** | `~/.codex/sessions/**/*.jsonl` | ✅ Verified on 0.14x–0.160.x / 55 rollouts: turn_context turns, per-response usage attribution (with token_count fallback), nested collab turns → subagent tabs, turn_aborted → interruption highlight |
+| Generic | Custom adapter (~100 lines of Python) | 🚧 planned for v1.0 |
 
-其他命令：`--list`（列表）、`--all --limit 20`（批量渲染 + 索引页）、`--trunc N` / `--full`（文本截断控制）、`--price-file`（自定义价格表）、`--db`（指定 sqlite 路径）。
+Other commands: `--list`, `--all --limit 20` (batch render + index page), `--trunc N` / `--full` (text truncation), `--price-file` (custom pricing), `--db` (explicit sqlite path).
 
-## 自定义价格
+## Custom pricing
 
-成本是本地估算，价格表三层优先：`--price-file` 指定的文件 > 自动加载的 `~/.agent-xray/prices.json` > 内置价格。文件格式：
+Costs are local estimates. Three-layer precedence: `--price-file` > auto-loaded `~/.agent-xray/prices.json` > built-in table. File format:
 
 ```json
 {
@@ -84,46 +88,46 @@ agent-xray ~/.codex/sessions/2026/10/07/rollout-xxx.jsonl
 }
 ```
 
-- `match` 按前缀匹配（大小写不敏感），**靠前的条目优先**——只需覆盖你关心的模型，其余仍用内置价格；想完全换成自己的表就加 `"replace_defaults": true`
-- `input` / `output` 是每百万 token 的美元单价；设为 `null` 表示该模型不计价（不进成本合计）
-- `cache_read_factor` / `cache_write_factor` 控制缓存计价折扣（默认 0.1x / 1.25x，对齐 ccusage 口径）
-- `agent-xray --dump-prices` 导出当前生效的完整价格表（带文件参数则写入文件），改完放到 `~/.agent-xray/prices.json` 即全局生效、无需再传参数
+- `match` is a case-insensitive prefix match; **earlier entries win** — override only the models you care about and the rest keep built-in prices. Add `"replace_defaults": true` to replace the built-in table entirely.
+- `input` / `output` are USD per million tokens; set to `null` to leave a model unpriced (excluded from totals).
+- `cache_read_factor` / `cache_write_factor` control cache pricing multipliers (defaults 0.1x / 1.25x, matching ccusage).
+- `agent-xray --dump-prices` exports the effective table (writes to a file if given one). Edit it and drop it at `~/.agent-xray/prices.json` to make it global — no flags needed.
 
-## 隐私
+## Privacy
 
-- 解析**全部在你的机器上**完成；产物是一个本地 HTML 文件
-- HTML 里**没有一句代码会联网**——ECharts 已内联，双击离线可看
-- 不上传、不匿名统计、没有 telemetry
-- 成本为**本地估算**（内置价格表可被 `--price-file` 覆盖），非账单数据
+- All parsing happens **on your machine**; the artifact is a local HTML file
+- The HTML **never makes a network request** — ECharts is inlined, works fully offline
+- No uploads, no anonymous telemetry
+- Costs are **local estimates** (the price table can be overridden with `--price-file`), not billing data
 
 ## FAQ
 
-**Q: 和 ccusage 有什么区别？**
-ccusage 回答"花了多少钱"（账单视角），Agent X-Ray 回答"agent 到底做了什么、哪一步走歪"（病理片视角）。成本曲线只是 X 光片上的一条线；核心是执行时间轴与失败分析。两者可互补使用。
+**Q: How is this different from ccusage?**
+ccusage answers "how much did I spend" (billing view); Agent X-Ray answers "what did the agent do, and where did it go wrong" (pathology view). The cost curve is just one line on the X-ray; the core is the execution timeline and failure analysis. They complement each other.
 
-**Q: 和 Langfuse / LangSmith 有什么区别？**
-它们要求改代码接入 SDK、数据发到服务端，且对**已发生**的历史会话无能为力。Agent X-Ray 零埋点、纯本地、专吃历史日志。
+**Q: How is this different from Langfuse / LangSmith?**
+They require instrumenting your code with an SDK and shipping data to a server, and they cannot help with sessions that **already happened**. Agent X-Ray is zero-instrumentation, fully local, and built for historical logs.
 
-**Q: ZCode 格式变更了怎么办？**
-适配器对每张表做能力探测，缺哪张表/列就降级（比如没有 usage 表时从消息时间戳推耗时），永不 crash，降级项会写进页面警告条。
+**Q: What if the ZCode format changes?**
+Adapters probe capabilities table by table; missing tables/columns degrade gracefully (e.g., deriving durations from message timestamps when there is no usage table), never crash, and write degradations into the page's warning banner.
 
-**Q: 大会话会不会卡？**
-实测 2633 条消息 / 2273 次模型调用的会话 → 9.9MB 单文件 HTML，现代浏览器可流畅交互。默认截断长文本（`--trunc 2000`），`--full` 可关闭。
+**Q: Do large sessions make the page slow?**
+A real session with 2,633 messages / 2,273 model calls produced a 9.9 MB single-file HTML that stays interactive in a modern browser. Long text is truncated by default (`--trunc 2000`); `--full` disables truncation.
 
-**Q: 为什么是单文件 HTML？**
-因为它的最高频用途是"扔给别人看"——放进 PR、贴进群、发邮件，一个文件就够了，无需对方装任何东西。
+**Q: Why a single HTML file?**
+Because the most common use is "show someone else" — put it in a PR, paste it in a chat, email it. One file, nothing to install on their side.
 
-## 开发
+## Development
 
 ```bash
 git clone <repo> && cd agent-xray
-uv sync            # 安装 dev 依赖（pytest/ruff）
-uv run pytest      # 26 个测试：合成 fixture + golden 快照 + 健壮性 + CLI
+uv sync            # dev deps (pytest/ruff)
+uv run pytest      # 29 tests: synthetic fixtures + golden snapshots + robustness + CLI
 uv run ruff check src tests
 uv run agent-xray --list
 ```
 
-架构刻意保持极简：`格式适配层（zcode_db / claude_code / codex）→ 统一事件模型（Session/Turn/ModelCall/ToolUse）→ 单文件渲染器`。适配 Claude Code 约花了一个下午，Codex 约一个下午；欢迎为新 agent 提 PR。
+The architecture is intentionally minimal: `format adapters (zcode_db / claude_code / codex) → unified event model (Session/Turn/ModelCall/ToolUse) → single-file renderer`. The Claude Code adapter took an afternoon, Codex another one. PRs for new agents are welcome.
 
 ## License
 
