@@ -51,30 +51,50 @@ _INDEX_TEMPLATE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Agent X-Ray — Session Index</title>
 <style>
-body{background:#0d1117;color:#e6edf3;font:14px -apple-system,'Segoe UI','PingFang SC',sans-serif;margin:24px}
-.top{display:flex;align-items:center;gap:12px}
-.top h1{font-size:18px;margin:0;flex:1;min-width:0}
-.lang{display:flex;gap:2px;flex:none}
-.lang button{background:#161b22;border:1px solid #2d333b;color:#8a93a5;border-radius:4px;padding:3px 9px;font-size:12px;cursor:pointer;font-family:inherit}
-.lang button.on{color:#e6edf3;border-color:#4c8dff}
-table{border-collapse:collapse;width:100%;margin-top:14px}
-th,td{padding:7px 10px;border-bottom:1px solid #2d333b;text-align:left;font-size:13px}
-th{color:#8a93a5;font-weight:500}
-tr:hover td{background:#1c2330;cursor:pointer}
-.num{text-align:right;font-family:ui-monospace,monospace}
-p{color:#8a93a5;font-size:12px}
+:root{--bg:#08060f;--fg:#f2eefb;--fg2:#b6aecb;--fg3:#7f7797;--border:rgba(187,173,230,.13);--grad:linear-gradient(120deg,#bbade6 0%,#9d8cf0 35%,#6fb6f5 70%,#7fd8f0 100%);--mono:ui-monospace,'SFMono-Regular','Cascadia Code',Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--fg);font:14px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background-color:var(--bg);background-image:radial-gradient(ellipse 900px 520px at 18% -6%,rgba(120,70,220,.30),transparent 70%),radial-gradient(ellipse 820px 480px at 78% -4%,rgba(40,120,240,.20),transparent 70%),radial-gradient(ellipse 700px 420px at 52% 6%,rgba(70,210,240,.10),transparent 70%);background-repeat:no-repeat;background-attachment:fixed;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(187,173,230,.35);color:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:52px 24px 80px}
+.top{display:flex;align-items:center;gap:16px}
+.top h1{font-size:24px;font-weight:650;letter-spacing:-.02em;margin:0;flex:1;min-width:0;line-height:1.3;text-wrap:balance;overflow-wrap:anywhere}
+.top h1::before{content:"";display:inline-block;width:10px;height:10px;margin-right:10px;border-radius:3px;background:var(--grad);box-shadow:0 0 18px rgba(187,173,230,.65);vertical-align:1px}
+.lang{display:flex;gap:2px;flex:none;padding:3px;border:1px solid var(--border);background:rgba(255,255,255,.03);border-radius:999px}
+.lang button{background:transparent;border:none;color:var(--fg3);border-radius:999px;font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:color .14s,background .14s,box-shadow .14s,transform .12s}
+.lang button:hover{color:var(--fg2)}
+.lang button.on{color:var(--fg);background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(187,173,230,.3),0 2px 8px rgba(0,0,0,.25)}
+.lang button:active{transform:scale(.96)}
+#idx-sub{color:var(--fg3);font-size:12.5px;margin:9px 0 24px}
+.table-card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:16px;clip-path:inset(0 round 16px);box-shadow:0 24px 60px -30px rgba(0,0,0,.8);scrollbar-width:thin;scrollbar-color:rgba(187,173,230,.25) transparent}
+.table-card::-webkit-scrollbar{height:8px}
+.table-card::-webkit-scrollbar-thumb{background:rgba(187,173,230,.25);border-radius:999px}
+table{border-collapse:separate;border-spacing:0;width:100%}
+th,td{padding:12px 16px;text-align:left;font-size:12.5px}
+th{color:var(--fg3);font-weight:600;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
+td{color:var(--fg2);border-bottom:1px solid rgba(187,173,230,.07)}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover td{background:rgba(187,173,230,.06);color:var(--fg)}
+tbody tr:last-child td{border-bottom:none}
+td:first-child{color:var(--fg);max-width:560px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.num{text-align:right;font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums}
+@media(max-width:720px){.wrap{padding:32px 14px 60px}.top h1{font-size:19px}th,td{padding:10px 11px;white-space:nowrap}.table-card{overflow-x:auto}table{min-width:640px}td:first-child{max-width:240px}}
 </style>
 </head>
 <body>
+<div class="wrap">
 <div class="top"><h1 id="idx-title">Agent X-Ray — Session Index</h1>
 <div class="lang"><button data-lang="zh">中文</button><button data-lang="en">EN</button></div></div>
 <p id="idx-sub"></p>
+<div class="table-card">
 <table><thead><tr>
 <th data-i18n="colTitle">Title</th><th data-i18n="colWhen">Started</th>
 <th class="num" data-i18n="colTurns">Turns</th><th class="num" data-i18n="colCalls">Calls</th>
 <th class="num" data-i18n="colFails">Failures</th><th class="num" data-i18n="colTokens">Tokens</th>
 <th class="num" data-i18n="colCost">Cost</th>
 </tr></thead><tbody>__ROWS__</tbody></table>
+</div>
+</div>
 <script>
 var I18N = {
   zh: {indexTitle: "Agent X-Ray — 会话索引", indexSub: "{n} 个会话 · 点击行打开对应 X 光片",

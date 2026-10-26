@@ -21,6 +21,7 @@ var I18N = {
     tabTimeline: "时间轴", tabTools: "工具", tabFailures: "失败", tabCost: "成本", tabChildren: "子代理",
     legendMain: "主调用", legendSub: "子代理调用", legendCompact: "压缩", legendTitle: "标题生成",
     legendFail: "失败(红框)", legendRetry: "重试(黄边)",
+    legendCalls: "调用", legendTools: "工具", legendStates: "状态",
     noTurns: "没有可显示的轮次", noUserInput: "(无用户输入的轮次)",
     modelCall: "模型调用", toolCall: "工具调用",
     time: "时间", durationK: "耗时", sourceK: "来源", status: "状态", total: "合计",
@@ -31,7 +32,7 @@ var I18N = {
     category: "类别", tool: "工具", count: "次数", totalTime: "总耗时", avg: "平均",
     noToolCalls: "本会话没有工具调用", noFailures: "✔ 未发现失败点",
     echartsMissing: "ECharts 未加载，无法绘制图表",
-    cumCost: "累计成本 ($)", cumOutput: "累计输出 tokens", minutes: "分钟", peak: "峰值",
+    cumCost: "累计成本 ($)", cumOutput: "累计输出 tokens", callsAxis: "调用序号", turnNo: "轮次", peak: "峰值",
     calls: "调用数", estCostShort: "成本估算", modelCol: "模型",
     noChildren: "本会话没有子代理",
     turnsShort: "轮次", callsShort: "调用", toolsShort: "工具", errorsShort: "错误",
@@ -49,6 +50,7 @@ var I18N = {
     tabChildren: "Subagents",
     legendMain: "main call", legendSub: "subagent call", legendCompact: "compaction",
     legendTitle: "title gen", legendFail: "failure (red)", legendRetry: "retry (yellow)",
+    legendCalls: "calls", legendTools: "tools", legendStates: "states",
     noTurns: "No turns to display", noUserInput: "(turn without user input)",
     modelCall: "Model call", toolCall: "Tool call",
     time: "time", durationK: "duration", sourceK: "source", status: "status", total: "total",
@@ -59,7 +61,7 @@ var I18N = {
     category: "category", tool: "tool", count: "count", totalTime: "total time", avg: "avg",
     noToolCalls: "No tool calls in this session", noFailures: "✔ No failures found",
     echartsMissing: "ECharts not loaded — cannot draw chart",
-    cumCost: "cumulative cost ($)", cumOutput: "cumulative output tokens", minutes: "minutes",
+    cumCost: "cumulative cost ($)", cumOutput: "cumulative output tokens", callsAxis: "call #", turnNo: "turn",
     peak: "peak",
     calls: "calls", estCostShort: "est. cost", modelCol: "model",
     noChildren: "No subagents in this session",
@@ -96,13 +98,13 @@ function setLang(lang) {
 }
 
 var SRC_COLORS = {
-  main_turn: "#4c8dff", subagent: "#a06bff", compact: "#8a93a5",
-  session_title: "#6b7686", other: "#3fb6a8"
+  main_turn: "#bbade6", subagent: "#7fd8f0", compact: "#e2adb4",
+  session_title: "#8a82a3", other: "#8fe3c0"
 };
 var CAT_COLORS = {
-  bash: "#e2b93d", read: "#4ca6ff", write: "#4cd7b0", edit: "#ffa657",
-  search: "#b18cff", web: "#46c2cb", agent: "#ff6ebb", todo: "#97ca72",
-  skill: "#7ee787", mcp: "#ff7b72", other: "#8a93a5"
+  bash: "#fec96d", read: "#7fd8f0", write: "#8fe3c0", edit: "#e2adb4",
+  search: "#bbade6", web: "#6fb6f5", agent: "#c4a7ff", todo: "#a8d8b9",
+  skill: "#9ee6d0", mcp: "#ffa6b8", other: "#8a82a3"
 };
 
 function colorFor(source, cat) { return cat ? (CAT_COLORS[cat] || CAT_COLORS.other) : (SRC_COLORS[source] || SRC_COLORS.other); }
@@ -167,14 +169,20 @@ function renderHeader() {
 
   var chips = el("div", "chips");
   var st = s.stats || {};
-  function chip(label, val, cls) { var d = el("div", "chip" + (cls ? " " + cls : "")); d.appendChild(document.createTextNode(label)); d.appendChild(el("span", "v", val)); chips.appendChild(d); }
+  function chip(label, val, cls) {
+    var d = el("div", "chip" + (cls ? " " + cls : ""));
+    d.appendChild(document.createTextNode(label));
+    d.appendChild(el("span", "v", val));
+    chips.appendChild(d);
+    return d;
+  }
   chip(t("turns"), st.turn_count);
   chip(t("modelCalls"), st.model_call_count + (st.aux_call_count ? "+" + st.aux_call_count : ""));
   chip(t("toolCalls"), st.tool_count);
   chip(t("errors"), (st.tool_error_count || 0) + (st.failures ? "/" + st.failures.length : ""), st.failures && st.failures.length ? "bad" : "");
-  chip(t("retries"), st.retry_count || 0, st.retry_count ? "bad" : "");
+  chip(t("retries"), st.retry_count || 0, st.retry_count ? "warn" : "");
   var u = st.usage || {};
-  chip("Tokens", fmtTokens(u.total) + " (in " + fmtTokens(u.input) + " / out " + fmtTokens(u.output) + " / cache " + fmtTokens(u.cache_read) + ")");
+  chip("Tokens", fmtTokens(u.total) + " (in " + fmtTokens(u.input) + " / out " + fmtTokens(u.output) + " / cache " + fmtTokens(u.cache_read) + ")").classList.add("wide");
   chip(t("estCost"), fmtCost(st.cost && st.cost.total), "money");
 
   var hdr = $("#hdr"); hdr.innerHTML = "";
@@ -241,19 +249,45 @@ function placeSeg(seg, start, dur, base, span, sequentialIdx, total) {
     seg.style.width = "calc(" + step + "% - 2px)";
   }
 }
+function legendGroup(label, items) {
+  var g = el("div", "legend-group");
+  g.appendChild(el("span", "legend-label", label));
+  items.forEach(function (it) {
+    var s = el("span", "lg" + (it.cls ? " " + it.cls : ""));
+    var sw = el("i", "sw");
+    if (it.color) sw.style.background = it.color;
+    s.appendChild(sw);
+    s.appendChild(document.createTextNode(it.label));
+    g.appendChild(s);
+  });
+  return g;
+}
 function renderTimeline() {
   var root = $("#turn-list"); root.innerHTML = "";
+  var present = {};
+  (DATA.turns || []).forEach(function (turn) {
+    (turn.model_calls || []).forEach(function (c) {
+      (c.tool_uses || []).forEach(function (tu) { present[tu.category] = true; });
+    });
+  });
+  var cats = Object.keys(CAT_COLORS).filter(function (c) { return present[c]; });
   var legend = el("div", "legend");
-  [["main_turn", t("legendMain")], ["subagent", t("legendSub")], ["compact", t("legendCompact")], ["session_title", t("legendTitle")]].forEach(function (x) {
-    var s = el("span", null, x[1]); s.style.setProperty("--c", colorFor(x[0])); legend.appendChild(s);
-  });
-  Object.keys(CAT_COLORS).forEach(function (c) {
-    var s = el("span", null, c); s.style.setProperty("--c", CAT_COLORS[c]); legend.appendChild(s);
-  });
-  var legend2 = el("div", "legend");
-  var e1 = el("span", null, t("legendFail")); e1.style.setProperty("--c", "transparent"); e1.style.color = "#ff9d9d"; legend2.appendChild(e1);
-  var e2 = el("span", null, t("legendRetry")); e2.style.setProperty("--c", "transparent"); e2.style.color = "#e2b93d"; legend2.appendChild(e2);
-  root.appendChild(legend); root.appendChild(legend2);
+  legend.appendChild(legendGroup(t("legendCalls"), [
+    { label: t("legendMain"), color: colorFor("main_turn") },
+    { label: t("legendSub"), color: colorFor("subagent") },
+    { label: t("legendCompact"), color: colorFor("compact") },
+    { label: t("legendTitle"), color: colorFor("session_title") }
+  ]));
+  if (cats.length) {
+    legend.appendChild(legendGroup(t("legendTools"), cats.map(function (c) {
+      return { label: c, color: CAT_COLORS[c] };
+    })));
+  }
+  legend.appendChild(legendGroup(t("legendStates"), [
+    { label: t("legendFail"), cls: "lg-fail" },
+    { label: t("legendRetry"), cls: "lg-retry" }
+  ]));
+  root.appendChild(legend);
 
   (DATA.turns || []).forEach(function (turn) { root.appendChild(turnBlock(turn)); });
   if (!(DATA.turns || []).length) root.appendChild(el("div", "empty", t("noTurns")));
@@ -325,24 +359,41 @@ function turnBlock(turn) {
 }
 
 /* ---------- drawer ---------- */
-function openDrawer() { $("#drawer").classList.add("open"); }
-function closeDrawer() { $("#drawer").classList.remove("open"); }
+function openDrawer() {
+  var d = $("#drawer"); if (!d) return;
+  d.classList.add("open");
+  var sc = $("#scrim"); if (sc) sc.classList.add("open");
+  document.body.classList.add("drawer-open");
+}
+function closeDrawer() {
+  var d = $("#drawer"); if (d) d.classList.remove("open");
+  var sc = $("#scrim"); if (sc) sc.classList.remove("open");
+  document.body.classList.remove("drawer-open");
+}
 function drawerHead(title, sub) {
   var d = $("#drawer");
   d.innerHTML = "";
-  var close = el("button", "close", "×"); close.onclick = closeDrawer; d.appendChild(close);
+  var bar = el("div", "drawer-bar");
+  var close = el("button", "close", "×");
+  close.setAttribute("aria-label", "Close");
+  close.onclick = closeDrawer;
+  bar.appendChild(close);
+  d.appendChild(bar);
   d.appendChild(el("h3", null, title));
   if (sub) d.appendChild(el("div", "sub", sub));
   return d;
 }
-function kvGrid(pairs) {
+function kvGrid(pairs, title) {
+  var card = el("div", "kv-card");
+  if (title) card.appendChild(el("div", "kv-title", title));
   var g = el("div", "kv");
   pairs.forEach(function (p) {
     if (p[1] === undefined || p[1] === null || p[1] === "") return;
     g.appendChild(el("div", "k", p[0]));
     g.appendChild(el("div", "v", esc(p[1])));
   });
-  return g;
+  card.appendChild(g);
+  return card;
 }
 function pre(title, body) {
   if (!body) return null;
@@ -353,7 +404,7 @@ function pre(title, body) {
 }
 function openCallDrawer(call, turn) {
   var d = drawerHead(t("modelCall") + " · " + (call.model || "?"),
-    "Turn #" + (turn ? turn.index : "?") + " · " + (call.id || ""));
+    t("turnNo") + " #" + (turn ? turn.index : "?") + " · " + (call.id || ""));
   d.appendChild(kvGrid([
     [t("time"), fmtDate(call.started_at)],
     [t("durationK"), fmtMs(call.duration_ms)],
@@ -368,13 +419,13 @@ function openCallDrawer(call, turn) {
     ["input", fmtTokens(u.input)], ["output", fmtTokens(u.output)],
     ["reasoning", fmtTokens(u.reasoning)], ["cache read", fmtTokens(u.cache_read)],
     ["cache write", fmtTokens(u.cache_write)], [t("total"), fmtTokens(u.total)],
-  ]));
+  ], "Tokens"));
   if (call.cost) {
     d.appendChild(kvGrid([
       [t("costInput"), fmtCost(call.cost.input)], [t("costOutput"), fmtCost(call.cost.output)],
       ["cache read", fmtCost(call.cost.cache_read)], ["cache write", fmtCost(call.cost.cache_write)],
       [t("costTotal"), fmtCost(call.cost.total)],
-    ]));
+    ], t("tabCost")));
   }
   if (call.error) d.appendChild(el("div", "errbox", call.error));
   var r1 = pre(t("reasoning"), call.reasoning_text); if (r1) d.appendChild(r1);
@@ -401,7 +452,7 @@ function toolCard(t2, call, turn) {
 }
 function openToolDrawer(tool, call, turn) {
   var d = drawerHead(t("toolCall") + " · " + tool.name,
-    "Turn #" + (turn ? turn.index : "?") + " · " + (tool.id || ""));
+    t("turnNo") + " #" + (turn ? turn.index : "?") + " · " + (tool.id || ""));
   d.appendChild(kvGrid([
     [t("status"), tool.status], [t("category"), tool.category],
     [t("durationK"), fmtMs(tool.duration_ms)], ["exit code", tool.exit_code],
@@ -441,10 +492,15 @@ function renderTools() {
   var tbody = el("tbody");
   top.forEach(function (s) {
     var tr = el("tr", "occ-row");
-    tr.appendChild(el("td", null, "")).appendChild(el("span", "tag", s.category));
+    var cat = el("span", "tag");
+    var ci = el("i");
+    ci.style.background = CAT_COLORS[s.category] || CAT_COLORS.other;
+    cat.appendChild(ci);
+    cat.appendChild(document.createTextNode(s.category));
+    tr.appendChild(el("td", null, "")).appendChild(cat);
     tr.appendChild(el("td", null, s.name));
     tr.appendChild(el("td", "num", String(s.count)));
-    var etd = el("td", "num", String(s.errors)); if (s.errors) etd.style.color = "var(--red)";
+    var etd = el("td", "num" + (s.errors ? " err-num" : ""), String(s.errors));
     tr.appendChild(etd);
     tr.appendChild(el("td", "num", fmtMs(s.total_ms)));
     tr.appendChild(el("td", "num", fmtMs(s.count ? Math.round(s.total_ms / s.count) : null)));
@@ -457,14 +513,12 @@ function toggleOccurrences(tr, name) {
   var next = tr.nextSibling;
   if (next && next.classList && next.classList.contains("occ-detail")) { next.remove(); return; }
   var det = el("tr", "occ-detail"); var td = el("td"); td.colSpan = 6;
+  var list = el("div", "occ-list");
   toolOccurrences(name).slice(0, 50).forEach(function (o) {
-    var line = el("tr", "occ-row");
-    line.appendChild(el("td", null, ""));
-    var c = el("td", null, "");
-    c.appendChild(el("span", "tag" + (o.tool.status === "error" ? " err" : ""), "turn #" + o.turn.index));
-    c.appendChild(document.createTextNode(" " + fmtTime(o.tool.started_at) + " · " + fmtMs(o.tool.duration_ms) + (o.tool.error ? " · " + o.tool.error : "")));
-    line.appendChild(c);
-    line.appendChild(el("td", null, ""));
+    var line = el("div", "occ-item");
+    line.appendChild(el("span", "tag" + (o.tool.status === "error" ? " err" : ""), t("turnNo") + " #" + o.turn.index));
+    line.appendChild(el("span", "occ-info",
+      fmtTime(o.tool.started_at) + " · " + fmtMs(o.tool.duration_ms) + (o.tool.error ? " · " + o.tool.error : "")));
     line.onclick = function () {
       switchTab("timeline");
       setTimeout(function () {
@@ -473,8 +527,9 @@ function toggleOccurrences(tr, name) {
         openToolDrawer(o.tool, o.call, o.turn);
       }, 60);
     };
-    td.appendChild(line);
+    list.appendChild(line);
   });
+  td.appendChild(list);
   det.appendChild(td);
   tr.parentNode.insertBefore(det, next);
 }
@@ -488,7 +543,7 @@ function renderFailures() {
     var d = el("div", "fail");
     d.appendChild(el("span", "k", failLabel(f.kind)));
     d.appendChild(el("span", "m", f.message));
-    d.appendChild(el("span", "t", "turn #" + f.turn_index + " · " + fmtTime(f.at)));
+    d.appendChild(el("span", "t", t("turnNo") + " #" + f.turn_index + " · " + fmtTime(f.at)));
     d.onclick = function () {
       switchTab("timeline");
       setTimeout(function () {
@@ -522,40 +577,118 @@ function drawCostChart() {
   var pts = costSeries();
   if (!window.echarts) { dom.textContent = t("echartsMissing"); return; }
   if (costChart) { costChart.dispose(); costChart = null; }
-  var chart = window.echarts.init(dom, "dark");
+  var reduce = false;
+  try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var chart = window.echarts.init(dom);
   costChart = chart;
-  var times = pts.map(function (p) { return +p.t.toFixed(2); });
+  var calls = pts.map(function (p, i) { return i + 1; });
   var t0 = DATA.created_at;
   var cumLabel = t("cumCost"), outLabel = t("cumOutput");
+  var axisText = "#7f7797", text = "#b6aecb";
+  var grad = window.echarts.graphic.LinearGradient;
   chart.setOption({
     backgroundColor: "transparent",
+    animation: !reduce,
+    animationDuration: 500,
+    animationEasing: "cubicOut",
+    textStyle: {
+      fontFamily: "-apple-system, 'Segoe UI', 'PingFang SC', sans-serif",
+      color: text
+    },
     tooltip: {
       trigger: "axis",
+      confine: true,
+      backgroundColor: "rgba(18, 14, 30, 0.96)",
+      borderColor: "rgba(187, 173, 230, 0.25)",
+      borderWidth: 1,
+      padding: [10, 12],
+      textStyle: { color: "#f2eefb", fontSize: 12 },
+      extraCssText: "border-radius:10px;box-shadow:0 16px 40px rgba(0,0,0,.55);backdrop-filter:blur(8px);",
+      axisPointer: { type: "line", lineStyle: { color: "rgba(187,173,230,.35)", type: "dashed" } },
       formatter: function (params) {
         var i = params[0].dataIndex; var p = pts[i];
-        return "turn #" + p.turn + "<br>" + fmtDate(t0 != null ? t0 + p.t * 60000 : null) +
+        return t("turnNo") + " #" + p.turn + "<br>" + fmtDate(t0 != null ? t0 + p.t * 60000 : null) +
           "<br>" + cumLabel + " " + fmtCost(p.cum) + "<br>" + outLabel + " " + fmtTokens(p.tok) +
           (p.call ? "<br>" + p.call.model + " · " + fmtMs(p.call.duration_ms) : "");
       }
     },
-    legend: { data: [cumLabel, outLabel] },
-    grid: { left: 60, right: 60, top: 40, bottom: 40 },
-    xAxis: { type: "category", data: times, name: t("minutes") },
+    legend: {
+      data: [cumLabel, outLabel], top: 2, left: "center",
+      icon: "roundRect", itemWidth: 10, itemHeight: 10, itemGap: 18,
+      textStyle: { color: text, fontSize: 11 }
+    },
+    grid: { left: 64, right: 64, top: 48, bottom: 56 },
+    xAxis: {
+      type: "category", boundaryGap: false, data: calls, name: t("callsAxis"),
+      nameLocation: "middle", nameGap: 30,
+      nameTextStyle: { color: axisText, fontSize: 10 },
+      axisLine: { lineStyle: { color: "rgba(187, 173, 230, 0.16)" } },
+      axisTick: { show: false },
+      axisLabel: {
+        color: axisText, fontSize: 10, hideOverlap: true,
+        interval: Math.max(0, Math.ceil(pts.length / 12) - 1)
+      }
+    },
     yAxis: [
-      { type: "value", name: "$", axisLabel: { formatter: function (v) { return "$" + v; } } },
-      { type: "value", name: "tokens", axisLabel: { formatter: fmtTokens } }
+      {
+        type: "value", name: "$",
+        nameTextStyle: { color: axisText, fontSize: 10 },
+        axisLabel: { color: axisText, fontSize: 10, formatter: function (v) { return "$" + v; } },
+        splitLine: { lineStyle: { color: "rgba(187, 173, 230, 0.08)", type: "dashed" } },
+        axisLine: { show: false }, axisTick: { show: false }
+      },
+      {
+        type: "value", name: "tokens",
+        nameTextStyle: { color: axisText, fontSize: 10 },
+        axisLabel: { color: axisText, fontSize: 10, formatter: fmtTokens },
+        splitLine: { show: false }, axisLine: { show: false }, axisTick: { show: false }
+      }
     ],
     series: [
-      { name: cumLabel, type: "line", data: pts.map(function (p) { return +p.cum.toFixed(4); }),
-        showSymbol: false, lineStyle: { color: "#4cd7b0", width: 2 }, itemStyle: { color: "#4cd7b0" },
-        markPoint: { data: [{ type: "max", name: t("peak") }] } },
-      { name: outLabel, type: "line", yAxisIndex: 1, data: pts.map(function (p) { return p.tok; }),
-        showSymbol: false, lineStyle: { color: "#4c8dff", width: 1.5, type: "dashed" }, itemStyle: { color: "#4c8dff" } }
+      {
+        name: cumLabel, type: "line", data: pts.map(function (p) { return +p.cum.toFixed(4); }),
+        showSymbol: false,
+        lineStyle: { color: "#bbade6", width: 2, shadowColor: "rgba(187,173,230,.45)", shadowBlur: 12 },
+        itemStyle: { color: "#bbade6" },
+        areaStyle: {
+          color: new grad(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(187,173,230,.28)" },
+            { offset: 1, color: "rgba(187,173,230,0)" }
+          ])
+        },
+        markPoint: {
+          symbol: "circle", symbolSize: 9,
+          data: [{ type: "max", name: t("peak") }],
+          itemStyle: { color: "#fec96d", borderColor: "rgba(8,6,15,.9)", borderWidth: 2 },
+          label: {
+            color: "#fec96d", fontSize: 10, position: "top",
+            formatter: function (p) { return t("peak") + " " + fmtCost(p.value); }
+          }
+        }
+      },
+      {
+        name: outLabel, type: "line", yAxisIndex: 1, data: pts.map(function (p) { return p.tok; }),
+        showSymbol: false,
+        lineStyle: { color: "#fec96d", width: 1.5, type: "dashed" },
+        itemStyle: { color: "#fec96d" },
+        areaStyle: {
+          color: new grad(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(254,201,109,.14)" },
+            { offset: 1, color: "rgba(254,201,109,0)" }
+          ])
+        }
+      }
     ]
   });
 
-  var tbl = el("table", "grid cost-table");
-  tbl.innerHTML = "<thead><tr><th>" + t("modelCol") + "</th></tr></thead>";
+  var tbl = el("table", "grid");
+  var thead = el("thead");
+  var htr = el("tr");
+  htr.appendChild(el("th", null, t("modelCol")));
+  [t("calls"), "tokens", t("estCostShort")].forEach(function (h) { htr.appendChild(el("th", "num", h)); });
+  thead.appendChild(htr);
+
+  var tbody = el("tbody");
   var byModel = {};
   (DATA.turns || []).forEach(function (turn) {
     (turn.model_calls || []).forEach(function (c) {
@@ -563,16 +696,27 @@ function drawCostChart() {
       m.calls++; m.tokens += (c.usage && c.usage.total) || 0; m.cost += (c.cost && c.cost.total) || 0;
     });
   });
-  var thead = tbl.querySelector("thead tr");
-  [t("calls"), "tokens", t("estCostShort")].forEach(function (h) { thead.appendChild(el("th", "num", h)); });
+  var totCalls = 0, totTokens = 0, totCost = 0;
   Object.keys(byModel).forEach(function (name) {
-    var m = byModel[name]; var tr = el("tr");
+    var m = byModel[name];
+    totCalls += m.calls; totTokens += m.tokens; totCost += m.cost;
+    var tr = el("tr");
     tr.appendChild(el("td", null, name));
     tr.appendChild(el("td", "num", String(m.calls)));
     tr.appendChild(el("td", "num", fmtTokens(m.tokens)));
     tr.appendChild(el("td", "num", fmtCost(m.cost)));
-    tbl.appendChild(tr);
+    tbody.appendChild(tr);
   });
+
+  var tfoot = el("tfoot");
+  var trt = el("tr", "total-row");
+  trt.appendChild(el("td", null, t("total")));
+  trt.appendChild(el("td", "num", String(totCalls)));
+  trt.appendChild(el("td", "num", fmtTokens(totTokens)));
+  trt.appendChild(el("td", "num", fmtCost(totCost)));
+  tfoot.appendChild(trt);
+
+  tbl.appendChild(thead); tbl.appendChild(tbody); tbl.appendChild(tfoot);
   var holder = $("#cost-table"); holder.innerHTML = "";
   holder.appendChild(tbl);
 }
@@ -594,7 +738,7 @@ function renderChildren() {
     card.appendChild(meta);
     var fails = (st.failures || []).slice(0, 5);
     fails.forEach(function (f) {
-      card.appendChild(el("div", "errbox", failLabel(f.kind) + " · turn #" + f.turn_index + " · " + f.message));
+      card.appendChild(el("div", "errbox", failLabel(f.kind) + " · " + t("turnNo") + " #" + f.turn_index + " · " + f.message));
     });
     root.appendChild(card);
   });
@@ -614,4 +758,6 @@ function renderAll() {
 }
 renderAll();
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
+var scrimEl = $("#scrim");
+if (scrimEl) scrimEl.onclick = closeDrawer;
 window.addEventListener("resize", function () { if (costChart) costChart.resize(); });
